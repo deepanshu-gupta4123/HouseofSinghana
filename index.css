@@ -192,7 +192,7 @@ h1, h2, h3 {
   right: 0;
   bottom: 0;
   background: var(--concrete);
-  z-index: 999;
+  z-index: 1100;
   flex-direction: column;
   align-items: center;
   justify-content: center;
