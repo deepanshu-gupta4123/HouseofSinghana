@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant OS — House of Singhana</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        :root {
+            --primary: #D97706; /* Saffron */
+            --bg: #111111; /* Dark Ink */
+            --surface: #1e1e1e; /* Glass card */
+            --text: #F4F4F2; /* Concrete */
+            --text-soft: #A1A1AA;
+            --border: #3F3F46;
+            --danger: #EF4444;
+            --success: #10B981;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .os-workspace {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar navigation */
+        .os-sidebar {
+            width: 260px;
+            background: #18181B;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            box-sizing: border-box;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .os-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            font-family: var(--serif);
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+
+        .os-logo svg {
+            width: 32px;
+            height: 32px;
+            stroke: currentColor;
+        }
+
+        .os-nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .os-nav-item {
+            padding: 12px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-soft);
+        }
+
+        .os-nav-item:hover, .os-nav-item.active {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* Main Workspace container */
+        .os-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .os-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .os-header h1 {
+            font-family: var(--serif);
+            font-size: 2.2rem;
+            margin: 0;
+        }
+
+        .os-user-badge {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            background: var(--surface);
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        /* Dashboard Overview layout */
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .board-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .board-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .board-card.critical::before { background: var(--danger); }
+        .board-card.healthy::before { background: var(--success); }
+
+        .board-card h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-family: var(--mono);
+            text-transform: uppercase;
+            color: var(--text-soft);
+        }
+
+        .board-card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--serif);
+        }
+
+        .board-card-footer {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--text-soft);
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 16px;
+            background: var(--surface);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: var(--text-soft);
+            background: #18181B;
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        /* Action elements */
+        .btn-action {
+            background: none;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 12px;
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 6px;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+
+        .btn-action:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .btn-action.danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-action.danger:hover {
+            background: var(--danger);
+            color: var(--text);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-warning { background: rgba(217,119,6,0.2); color: var(--primary); }
+        .badge-success { background: rgba(16,185,129,0.2); color: var(--success); }
+        .badge-danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+        .badge-neutral { background: var(--border); color: var(--text); }
+
+        /* Command Palette Popup */
+        .palette-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 10vh;
+        }
+
+        .palette-container {
+            background: #18181B;
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .palette-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            font-size: 1.1rem;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .palette-results {
+            max-height: 300px;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .palette-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            color: var(--text-soft);
+            transition: all 0.2s;
+        }
+
+        .palette-item:hover, .palette-item.active {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        /* Generic Modals */
+        .os-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .os-modal {
+            background: #18181B;
+            border: 1px solid var(--border);
+            padding: 32px;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 6px;
+        }
+
+        .os-modal h3 {
+            font-family: var(--serif);
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .os-modal-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .os-modal-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .os-modal-field label {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-soft);
+        }
+
+        .os-modal-field input, .os-modal-field textarea, .os-modal-field select {
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--sans);
+        }
+
+        .os-modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .tab-content-panel {
+            display: none;
+        }
+
+        .tab-content-panel.active {
+            display: block;
+        }
+
+        /* ═══ RESPONSIVE DASHBOARD LAYOUT & CARD VIEWS ═══ */
+        .os-mobile-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            background: #18181B;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        @media (max-width: 992px) {
+            .os-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                z-index: 1100;
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                top: 0;
+                left: 0;
+            }
+            .os-sidebar.open {
+                transform: translateX(0);
+            }
+            .os-content {
+                margin-left: 0 !important;
+                padding: 24px 20px !important;
+            }
+            .os-mobile-header {
+                display: flex;
+            }
+            .os-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+
+        /* Vercel style responsive tables container */
+        @media (max-width: 768px) {
+            .board-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            /* Force table components to behave like stacked cards */
+            .responsive-table-container table, 
+            .responsive-table-container thead, 
+            .responsive-table-container tbody, 
+            .responsive-table-container th, 
+            .responsive-table-container td, 
+            .responsive-table-container tr { 
+                display: block; 
+                width: 100%;
+                background: transparent !important;
+            }
+            .responsive-table-container thead tr { 
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            .responsive-table-container tr {
+                background: var(--surface) !important;
+                border: 1px solid var(--border) !important;
+                margin-bottom: 16px;
+                padding: 16px;
+                border-radius: 6px;
+            }
+            .responsive-table-container td { 
+                border: none;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+                position: relative;
+                padding: 10px 0;
+                padding-left: 45%; 
+                text-align: right;
+                font-size: 0.85rem;
+                white-space: normal;
+                word-break: break-word;
+            }
+            .responsive-table-container td:last-child {
+                border-bottom: none;
+            }
+            .responsive-table-container td::before { 
+                position: absolute;
+                top: 10px;
+                left: 0;
+                width: 40%; 
+                padding-right: 10px; 
+                white-space: nowrap;
+                text-align: left;
+                font-family: var(--mono);
+                font-size: 0.7rem;
+                color: var(--text-soft);
+                text-transform: uppercase;
+                content: attr(data-label);
+            }
+        }
+        
+        /* Premium Critical Task/Approvals Alerts styling */
+        .critical-tasks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .critical-task-item {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-left: 4px solid var(--danger);
+            padding: 16px 20px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.2s;
+        }
+        .critical-task-item.warning {
+            border-color: rgba(217, 119, 6, 0.2);
+            border-left-color: var(--primary);
+            background: rgba(217, 119, 6, 0.05);
+        }
+        .critical-task-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .critical-task-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+        .critical-task-desc {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            line-height: 1.4;
+        }
+        .critical-task-actions {
+            display: flex;
+            gap: 8px;
+        }
+        @media (max-width: 640px) {
+            .critical-task-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .critical-task-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="os-mobile-header">
+        <button id="menu-toggle-btn" style="background:none; border:none; color:var(--text); font-size:1.5rem; cursor:pointer;">☰</button>
+        <div class="os-logo" style="margin-bottom:0; font-size:1.1rem; gap:8px;">
+            <svg viewBox="0 0 100 100" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;">
+                <line x1="50" y1="20" x2="50" y2="70" />
+                <circle cx="50" cy="16" r="3" />
+                <line x1="20" y1="30" x2="80" y2="30" />
+                <polygon points="48,30 50,22 52,30" fill="currentColor" stroke="none" />
+            </svg>
+            <span>Merchant OS</span>
+        </div>
+        <div style="width: 24px;"></div>
+    </div>
+
+    <div class="os-workspace">
+        <!-- Sidebar Navigation -->
+        <aside class="os-sidebar">
+            <div class="os-logo">
+                <svg viewBox="0 0 100 100" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="50" y1="20" x2="50" y2="70" />
+                    <circle cx="50" cy="16" r="3" />
+                    <line x1="20" y1="30" x2="80" y2="30" />
+                    <polygon points="48,30 50,22 52,30" fill="currentColor" stroke="none" />
+                </svg>
+                <span>Merchant OS</span>
+            </div>
+            <nav>
+                <ul class="os-nav-list">
+                    <li class="os-nav-item active" data-tab="overview">Overview</li>
+                    <li class="os-nav-item" data-tab="orders">Orders (OMS)</li>
+                    <li class="os-nav-item" data-tab="inventory">Inventory Ledger</li>
+                    <li class="os-nav-item" data-tab="crm">CRM Customers</li>
+                    <li class="os-nav-item" data-tab="tickets">Support Tickets</li>
+                    <li class="os-nav-item" data-tab="reviews">Reviews Moderation</li>
+                    <li class="os-nav-item" data-tab="inquiries">Wholesale Inquiries</li>
+                </ul>
+            </nav>
+            <div style="margin-top: auto; font-size: 0.75rem; color: var(--text-soft); text-align: center;">
+                <p>Press <kbd style="border: 1px solid var(--border); padding: 2px 6px;">Ctrl + K</kbd> to search</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="os-content">
+            <header class="os-header">
+                <h1 id="active-tab-title">Overview Dashboard</h1>
+                <div class="os-user-badge" id="active-user-badge">Role: Merchant</div>
+            </header>
+
+            <!-- 1. OVERVIEW BOARD -->
+            <section id="tab-overview" class="tab-content-panel active">
+                <div class="board-grid">
+                    <div class="board-card healthy" id="card-health">
+                        <h3>System Health Index</h3>
+                        <div class="board-card-value" id="health-val">0</div>
+                        <div class="board-card-footer" id="health-status">Checking stats...</div>
+                    </div>
+                    <div class="board-card" id="card-revenue">
+                        <h3>Today's Gross Sales</h3>
+                        <div class="board-card-value" id="sales-val">₹0.00</div>
+                        <div class="board-card-footer" id="sales-orders">0 orders logged today</div>
+                    </div>
+                    <div class="board-card" id="card-diagnostics">
+                        <h3>Diagnostics Latency</h3>
+                        <div class="board-card-value" id="ping-val">0 ms</div>
+                        <div class="board-card-footer" id="ping-status">SQLite WAL verified</div>
+                    </div>
+                </div>
+
+                <!-- CRITICAL ACTION ITEMS -->
+                <div class="dashboard-section" id="critical-tasks-section" style="display: none; margin-bottom: 40px;">
+                    <h2 class="section-title" style="color: var(--danger); margin-bottom: 16px;">Critical Action Items</h2>
+                    <div id="critical-tasks-list" class="critical-tasks-container"></div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h2 class="section-title">Top SKU Sales Velocity (Out-Of-Band OLAP)</h2>
+                    <div id="overview-velocity-table" class="responsive-table-container sticky-table">Loading velocity reports...</div>
+                </div>
+            </section>
+
+            <!-- 2. ORDERS (OMS) BOARD -->
+            <section id="tab-orders" class="tab-content-panel">
+                <div class="dashboard-section">
+                    <h2 class="section-title">Active Order Management Queue</h2>
+                    <div id="orders-table-container" class="responsive-table-container sticky-table">Loading active orders queue...</div>
+                </div>
+            </section>
+
+            <!-- 3. INVENTORY BOARD -->
+            <section id="tab-inventory" class="tab-content-panel">
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 class="section-title" style="margin:0;">Perpetual Inventory Ledger Summary</h2>
+                    <div>
+                        <button class="btn-action" id="btn-receive-batch">Log Batch Receipt</button>
+                        <button class="btn-action" id="btn-run-audit">Perform Physical Audit</button>
+                    </div>
+                </div>
+                <div id="inventory-summary-container" class="responsive-table-container sticky-table">Loading inventory ledger summary...</div>
+                
+                <h2 class="section-title" style="margin-top:40px;">Procurement Batches</h2>
+                <div id="inventory-batches-container" class="responsive-table-container sticky-table">Loading batches...</div>
+            </section>
+
+            <!-- 4. CRM CUSTOMERS BOARD -->
+            <section id="tab-crm" class="tab-content-panel">
+                <div class="dashboard-section">
+                    <h2 class="section-title">CRM Directory & Customer Segmentation</h2>
+                    <div id="crm-table-container" class="responsive-table-container sticky-table">Loading CRM database...</div>
+                </div>
+            </section>
+
+            <!-- 5. SUPPORT TICKETS BOARD -->
+            <section id="tab-tickets" class="tab-content-panel">
+                <div class="dashboard-section">
+                    <h2 class="section-title">Support Complaints & SLA Expiry Queue</h2>
+                    <div id="complaints-table-container" class="responsive-table-container sticky-table">Loading active tickets...</div>
+                </div>
+            </section>
+
+            <!-- 6. REVIEWS BOARD -->
+            <section id="tab-reviews" class="tab-content-panel">
+                <div class="dashboard-section">
+                    <h2 class="section-title">Customer Reviews Moderation CMS (No-Deletion Queue)</h2>
+                    <div id="reviews-table-container" class="responsive-table-container sticky-table">Loading reviews...</div>
+                </div>
+            </section>
+
+            <!-- 7. WHOLESALE INQUIRIES BOARD -->
+            <section id="tab-inquiries" class="tab-content-panel">
+                <div class="dashboard-section">
+                    <h2 class="section-title">Wholesale Trade Inquiries</h2>
+                    <div id="inquiries-table-container" class="responsive-table-container sticky-table">Loading wholesale inquiries...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- COMMAND PALETTE OVERLAY -->
+    <div class="palette-overlay" id="palette-overlay">
+        <div class="palette-container">
+            <input type="text" class="palette-input" id="palette-search" placeholder="Type a tab name or shortcut (e.g. /diagnostics)...">
+            <ul class="palette-results" id="palette-results"></ul>
+        </div>
+    </div>
+
+    <!-- MODAL: RECEIVE BATCH -->
+    <div class="os-modal-overlay" id="modal-receive-batch">
+        <div class="os-modal">
+            <h3>Receive Procurement Batch</h3>
+            <div class="os-modal-grid">
+                <div class="os-modal-field">
+                    <label>Batch Number</label>
+                    <input type="text" id="rb-number" placeholder="E.g. BAT-CHIL-2026A">
+                </div>
+                <div class="os-modal-field">
+                    <label>Variant ID</label>
+                    <input type="number" id="rb-variant-id" placeholder="Variant ID number">
+                </div>
+                <div class="os-modal-field">
+                    <label>Warehouse ID</label>
+                    <input type="number" id="rb-warehouse-id" value="1">
+                </div>
+                <div class="os-modal-field">
+                    <label>Supplier Name</label>
+                    <input type="text" id="rb-supplier" placeholder="E.g. Shekhawati Estates">
+                </div>
+                <div class="os-modal-field">
+                    <label>Quantity Received</label>
+                    <input type="number" id="rb-qty" placeholder="E.g. 50">
+                </div>
+                <div class="os-modal-field">
+                    <label>Unit Purchase Cost (Paise)</label>
+                    <input type="number" id="rb-cost" placeholder="E.g. 45000">
+                </div>
+            </div>
+            <div class="os-modal-buttons">
+                <button class="btn-action" style="border-color:var(--border); color:var(--text-soft);" onclick="closeModal('modal-receive-batch')">Cancel</button>
+                <button class="btn-action" onclick="submitReceiveBatch()">Confirm Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: RUN AUDIT -->
+    <div class="os-modal-overlay" id="modal-run-audit">
+        <div class="os-modal">
+            <h3>Physical Count Audit Adjustment</h3>
+            <div class="os-modal-grid">
+                <div class="os-modal-field">
+                    <label>Variant ID</label>
+                    <input type="number" id="audit-variant-id" placeholder="Variant ID">
+                </div>
+                <div class="os-modal-field">
+                    <label>Warehouse ID</label>
+                    <input type="number" id="audit-warehouse-id" value="1">
+                </div>
+                <div class="os-modal-field">
+                    <label>Physical Count Quantity</label>
+                    <input type="number" id="audit-count" placeholder="Physical count on hand">
+                </div>
+                <div class="os-modal-field">
+                    <label>Audit Remarks</label>
+                    <textarea id="audit-remarks" rows="2" placeholder="Describe variance details..."></textarea>
+                </div>
+            </div>
+            <div class="os-modal-buttons">
+                <button class="btn-action" style="border-color:var(--border); color:var(--text-soft);" onclick="closeModal('modal-run-audit')">Cancel</button>
+                <button class="btn-action" onclick="submitAudit()">Record Audit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: COURIER DISPATCH -->
+    <div class="os-modal-overlay" id="modal-dispatch">
+        <div class="os-modal">
+            <h3>Courier Dispatch Details</h3>
+            <div class="os-modal-grid">
+                <div class="os-modal-field">
+                    <label>Courier Name</label>
+                    <input type="text" id="disp-courier" placeholder="E.g. BlueDart">
+                </div>
+                <div class="os-modal-field">
+                    <label>Tracking Number</label>
+                    <input type="text" id="disp-tracking" placeholder="E.g. 7779898234">
+                </div>
+            </div>
+            <div class="os-modal-buttons">
+                <button class="btn-action" style="border-color:var(--border); color:var(--text-soft);" onclick="closeModal('modal-dispatch')">Cancel</button>
+                <button class="btn-action" onclick="submitDispatch()">Confirm Dispatch</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: REVIEW RESPONSE -->
+    <div class="os-modal-overlay" id="modal-review-respond">
+        <div class="os-modal">
+            <h3>Write Merchant Response</h3>
+            <div class="os-modal-grid">
+                <div class="os-modal-field text">
+                    <label>Official Response Guidelines</label>
+                    <textarea id="review-response-text" rows="3" placeholder="Sourced directly from estates. Thank you for your note."></textarea>
+                </div>
+            </div>
+            <div class="os-modal-buttons">
+                <button class="btn-action" style="border-color:var(--border); color:var(--text-soft);" onclick="closeModal('modal-review-respond')">Cancel</button>
+                <button class="btn-action" onclick="submitReviewResponse()">Record Response</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <script src="main.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        let activeTab = 'overview';
+        let currentDispatchId = null;
+        let currentResponseReviewId = null;
+
+        // SPA Navigation bindings
+        document.querySelectorAll('.os-nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const target = item.getAttribute('data-tab');
+                switchTab(target);
+            });
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.os-nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-content-panel').forEach(el => el.classList.remove('active'));
+            
+            const activeItem = document.querySelector(`.os-nav-item[data-tab="${tabId}"]`);
+            if (activeItem) activeItem.classList.add('active');
+            
+            const activeSection = document.getElementById(`tab-${tabId}`);
+            if (activeSection) activeSection.classList.add('active');
+
+            activeTab = tabId;
+            document.getElementById('active-tab-title').textContent = activeItem.textContent;
+
+            // Trigger fetches based on tab
+            if (tabId === 'overview') fetchOverview();
+            else if (tabId === 'orders') fetchOrders();
+            else if (tabId === 'inventory') fetchInventory();
+            else if (tabId === 'crm') fetchCrm();
+            else if (tabId === 'tickets') fetchTickets();
+            else if (tabId === 'reviews') fetchReviews();
+            else if (tabId === 'inquiries') fetchInquiries();
+        }
+
+        // Modals handlers
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        document.getElementById('btn-receive-batch').addEventListener('click', () => openModal('modal-receive-batch'));
+        document.getElementById('btn-run-audit').addEventListener('click', () => openModal('modal-run-audit'));
+
+        // --- FETCHERS ---
+
+        async function fetchOverview() {
+            try {
+                const res = await fetch('/api/os/intelligence/dashboard', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                // Set health card
+                document.getElementById('health-val').textContent = data.health.healthScore;
+                document.getElementById('health-status').textContent = `Status: ${data.health.status} (${data.health.metrics.lowStockSkus} low stock)`;
+                
+                const cardHealth = document.getElementById('card-health');
+                cardHealth.className = 'board-card';
+                if (data.health.status === 'HEALTHY') cardHealth.classList.add('healthy');
+                else if (data.health.status === 'CRITICAL') cardHealth.classList.add('critical');
+
+                // Set Sales card
+                document.getElementById('sales-val').textContent = `₹${data.sales.grossRevenueRupees.toFixed(2)}`;
+                document.getElementById('sales-orders').textContent = `${data.sales.totalOrders} orders logged today`;
+
+                // Set diagnostics card
+                document.getElementById('ping-val').textContent = `${data.diagnostics.database.pingMs} ms`;
+                document.getElementById('ping-status').textContent = `Journal mode: ${data.diagnostics.database.journalMode}`;
+
+                // Fetch SKU Velocity report
+                const velRes = await fetch('/api/os/intelligence/top-skus?limit=5', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const velocity = await velRes.json();
+                renderVelocity(velocity);
+
+                // Fetch Pending Price Approvals
+                let pendingApprovals = [];
+                try {
+                    const appRes = await fetch('/api/os/approvals', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (appRes.ok) pendingApprovals = await appRes.json();
+                } catch (e) {
+                    console.error('Approvals fetch failed:', e);
+                }
+
+                // Render Action Items list
+                renderCriticalTasks(data.health.metrics, pendingApprovals);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderCriticalTasks(metrics, pendingApprovals) {
+            const section = document.getElementById('critical-tasks-section');
+            const list = document.getElementById('critical-tasks-list');
+            list.innerHTML = '';
+            
+            let itemsCount = 0;
+
+            // 1. SLA Breaches Alert
+            if (metrics.slaBreachedComplaints > 0) {
+                itemsCount++;
+                const item = document.createElement('div');
+                item.className = 'critical-task-item';
+                item.innerHTML = `
+                    <div class="critical-task-info">
+                        <span class="critical-task-title">SLA Breach Warning</span>
+                        <span class="critical-task-desc">${metrics.slaBreachedComplaints} support complaints have breached their active SLA timeline.</span>
+                    </div>
+                    <div class="critical-task-actions">
+                        <button class="btn-action danger" onclick="switchTab('tickets')">Resolve Tickets</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            }
+
+            // 2. Low Stock alert
+            if (metrics.lowStockSkus > 0) {
+                itemsCount++;
+                const item = document.createElement('div');
+                item.className = 'critical-task-item warning';
+                item.innerHTML = `
+                    <div class="critical-task-info">
+                        <span class="critical-task-title">Low Stock Warning</span>
+                        <span class="critical-task-desc">${metrics.lowStockSkus} variants have crossed below their reorder safety buffer.</span>
+                    </div>
+                    <div class="critical-task-actions">
+                        <button class="btn-action" onclick="switchTab('inventory')">Reorder Stock</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            }
+
+            // 3. Price approvals list
+            if (pendingApprovals && pendingApprovals.length > 0) {
+                pendingApprovals.forEach(appr => {
+                    itemsCount++;
+                    const details = JSON.parse(appr.details);
+                    const item = document.createElement('div');
+                    item.className = 'critical-task-item warning';
+                    
+                    const priceType = appr.request_type === 'PRICE_UPDATE' ? 'Product Base Price' : 'Variant Size Price';
+                    const targetName = appr.request_type === 'PRICE_UPDATE' ? `Product ID #${appr.entity_id}` : `SKU: ${details.sku || appr.entity_id}`;
+                    
+                    item.innerHTML = `
+                        <div class="critical-task-info">
+                            <span class="critical-task-title">Pending Price Approval</span>
+                            <span class="critical-task-desc">
+                                <strong>${priceType}</strong> change requested by user ID #${appr.requested_by}.<br>
+                                Target: ${targetName} | Old: ₹${(details.old_price / 100).toFixed(2)} &rarr; New: ₹${(details.new_price / 100).toFixed(2)}
+                            </span>
+                        </div>
+                        <div class="critical-task-actions">
+                            <button class="btn-action" style="border-color:var(--success); color:var(--success);" onclick="processPriceApproval(${appr.id}, 'APPROVED')">Approve</button>
+                            <button class="btn-action danger" onclick="processPriceApproval(${appr.id}, 'REJECTED')">Reject</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            }
+
+            if (itemsCount > 0) {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        async function processPriceApproval(id, action) {
+            try {
+                const res = await fetch(`/api/os/approvals/${id}/respond`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ action })
+                });
+                if (res.ok) {
+                    alert(`Request successfully ${action.toLowerCase()}!`);
+                    fetchOverview();
+                } else {
+                    const data = await res.json();
+                    alert(`Action failed: ${data.error}`);
+                }
+            } catch (err) {
+                alert('Connection failure.');
+            }
+        }
+
+        function renderVelocity(rows) {
+            const container = document.getElementById('overview-velocity-table');
+            if (rows.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-soft)">No velocity records logged yet.</p>';
+                return;
+            }
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th>Units Sold</th>
+                            <th>Revenue Generated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(r => `
+                            <tr>
+                                <td data-label="Product">${r.product_name} (${r.variant_name})</td>
+                                <td data-label="SKU" style="font-family:var(--mono)">${r.sku}</td>
+                                <td data-label="Units Sold">${r.total_units}</td>
+                                <td data-label="Revenue" style="font-family:var(--mono)">₹${(r.total_revenue/100).toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function fetchOrders() {
+            const container = document.getElementById('orders-table-container');
+            try {
+                const res = await fetch('/api/os/orders', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const orders = await res.json();
+                if (orders.length === 0) {
+                    container.innerHTML = '<p style="color:var(--text-soft)">No orders logged in queue.</p>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Customer</th>
+                                <th>Method</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action Control</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${orders.map(o => {
+                                let action = '';
+                                if (o.order_status === 'RECEIVED') {
+                                    action = `<button class="btn-action" onclick="transitionOrder(${o.id}, 'APPROVED')">Approve Credit</button>`;
+                                } else if (o.order_status === 'APPROVED') {
+                                    action = `<button class="btn-action" onclick="transitionOrder(${o.id}, 'PACKED')">Pack items</button>`;
+                                } else if (o.order_status === 'PACKED') {
+                                    action = `<button class="btn-action" onclick="transitionOrder(${o.id}, 'INVOICED')">Generate Invoice</button>`;
+                                } else if (o.order_status === 'INVOICED') {
+                                    action = `<button class="btn-action" onclick="triggerDispatch(${o.id})">Dispatch Shipment</button>`;
+                                }
+                                return `
+                                    <tr>
+                                        <td data-label="Order Number" style="font-family:var(--mono)">${o.order_number}</td>
+                                        <td data-label="Customer">${o.customer_name}</td>
+                                        <td data-label="Method" style="font-family:var(--mono)">${o.payment_method.toUpperCase()}</td>
+                                        <td data-label="Total" style="font-family:var(--mono)">₹${(o.total_amount/100).toFixed(2)}</td>
+                                        <td data-label="Status"><span class="badge badge-warning">${o.order_status}</span></td>
+                                        <td data-label="Action Control">${action || '-'}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (e) {
+                container.innerHTML = '<p style="color:var(--danger)">Error loading queue.</p>';
+            }
+        }
+
+        async function transitionOrder(id, status) {
+            try {
+                const res = await fetch(`/api/os/orders/${id}/transition`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                if (res.ok) fetchOrders();
+                else alert('Transition failed.');
+            } catch (err) {
+                alert('Connection error.');
+            }
+        }
+
+        function triggerDispatch(id) {
+            currentDispatchId = id;
+            openModal('modal-dispatch');
+        }
+
+        async function submitDispatch() {
+            const courier = document.getElementById('disp-courier').value;
+            const tracking = document.getElementById('disp-tracking').value;
+            if (!courier || !tracking) return alert('Both tracking values are required.');
+
+            try {
+                const res = await fetch(`/api/os/fulfilment/${currentDispatchId}/dispatch`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ courier, tracking_number: tracking })
+                });
+                if (res.ok) {
+                    closeModal('modal-dispatch');
+                    fetchOrders();
+                } else alert('Dispatch failed.');
+            } catch (err) {
+                alert('Connection failure.');
+            }
+        }
+
+        async function fetchInventory() {
+            try {
+                const res = await fetch('/api/os/inventory/summary', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const summary = await res.json();
+                const container = document.getElementById('inventory-summary-container');
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th>Current Stock</th>
+                                <th>Reserved</th>
+                                <th>Available</th>
+                                <th>Reorder Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${summary.map(i => {
+                                const isLow = i.available_stock < i.reorder_level;
+                                return `
+                                    <tr>
+                                        <td data-label="Product">${i.product_name} (${i.variant_name})</td>
+                                        <td data-label="SKU" style="font-family:var(--mono)">${i.sku}</td>
+                                        <td data-label="Current Stock">${i.current_stock}</td>
+                                        <td data-label="Reserved">${i.reserved_stock}</td>
+                                        <td data-label="Available"><span class="badge ${isLow ? 'badge-danger' : 'badge-success'}">${i.available_stock}</span></td>
+                                        <td data-label="Reorder Level">${i.reorder_level}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                // Fetch batches
+                const batchRes = await fetch('/api/os/inventory/batches', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const batches = await batchRes.json();
+                const bContainer = document.getElementById('inventory-batches-container');
+                bContainer.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Batch Number</th>
+                                <th>SKU</th>
+                                <th>Received</th>
+                                <th>Remaining</th>
+                                <th>Supplier</th>
+                                <th>Expiry</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${batches.map(b => `
+                                <tr>
+                                    <td data-label="Batch Number" style="font-family:var(--mono)">${b.batch_number}</td>
+                                    <td data-label="SKU" style="font-family:var(--mono)">${b.sku}</td>
+                                    <td data-label="Received">${b.quantity_received}</td>
+                                    <td data-label="Remaining">${b.quantity_remaining}</td>
+                                    <td data-label="Supplier">${b.supplier_name}</td>
+                                    <td data-label="Expiry">${b.expiry_date || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function submitReceiveBatch() {
+            const rbNum = document.getElementById('rb-number').value.trim();
+            const rbVar = parseInt(document.getElementById('rb-variant-id').value);
+            const rbWh = parseInt(document.getElementById('rb-warehouse-id').value);
+            const rbSup = document.getElementById('rb-supplier').value.trim();
+            const rbQty = parseInt(document.getElementById('rb-qty').value);
+            const rbCost = parseInt(document.getElementById('rb-cost').value);
+
+            if (!rbNum || !rbVar || !rbQty || !rbCost) return alert('Please input all batch details.');
+
+            try {
+                const res = await fetch('/api/os/inventory/batches', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        batch_number: rbNum, variant_id: rbVar, warehouse_id: rbWh,
+                        supplier_name: rbSup, quantity_received: rbQty, unit_purchase_cost: rbCost
+                    })
+                });
+
+                if (res.ok) {
+                    closeModal('modal-receive-batch');
+                    fetchInventory();
+                } else {
+                    const err = await res.json();
+                    alert(`Receipt failed: ${err.error}`);
+                }
+            } catch (e) {
+                alert('Connection failure.');
+            }
+        }
+
+        async function submitAudit() {
+            const vId = parseInt(document.getElementById('audit-variant-id').value);
+            const wId = parseInt(document.getElementById('audit-warehouse-id').value);
+            const count = parseInt(document.getElementById('audit-count').value);
+            const remarks = document.getElementById('audit-remarks').value;
+
+            if (!vId || count === undefined || !remarks) return alert('Input all audit parameters.');
+
+            try {
+                const res = await fetch('/api/os/inventory/audit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ variant_id: vId, warehouse_id: wId, physical_count: count, remarks })
+                });
+
+                if (res.ok) {
+                    closeModal('modal-run-audit');
+                    fetchInventory();
+                } else alert('Failed to commit audit variance.');
+            } catch (e) {
+                alert('Connection failure.');
+            }
+        }
+
+        async function fetchCrm() {
+            const container = document.getElementById('crm-table-container');
+            try {
+                const res = await fetch('/api/os/customers', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const rows = await res.json();
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>CRM Segment</th>
+                                <th>Orders Count</th>
+                                <th>Lifetime Buy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(c => `
+                                <tr>
+                                    <td data-label="Name"><strong>${c.name}</strong></td>
+                                    <td data-label="Email">${c.email}</td>
+                                    <td data-label="Phone">${c.phone || '-'}</td>
+                                    <td data-label="CRM Segment"><span class="badge ${c.segment === 'VIP' ? 'badge-success' : 'badge-warning'}">${c.segment}</span></td>
+                                    <td data-label="Orders Count">${c.orders_count}</td>
+                                    <td data-label="Lifetime Buy" style="font-family:var(--mono)">₹${(c.lifetime_spend_paise/100).toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (e) {
+                container.innerHTML = '<p>Error loading CRM.</p>';
+            }
+        }
+
+        async function fetchTickets() {
+            const container = document.getElementById('complaints-table-container');
+            try {
+                const res = await fetch('/api/os/complaints', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const rows = await res.json();
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket Number</th>
+                                <th>Customer</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>SLA Expiration</th>
+                                <th>Control</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(t => {
+                                let ctrl = '';
+                                if (t.status === 'OPEN') {
+                                    ctrl = `<button class="btn-action" onclick="transitionTicket(${t.id}, 'ASSIGNED')">Assign to Ops</button>`;
+                                } else if (t.status === 'ASSIGNED') {
+                                    ctrl = `<button class="btn-action" onclick="transitionTicket(${t.id}, 'CLOSED')">Close resolved</button>`;
+                                }
+                                return `
+                                    <tr>
+                                        <td data-label="Ticket Number" style="font-family:var(--mono)">${t.ticket_number}</td>
+                                        <td data-label="Customer">${t.customer_name}</td>
+                                        <td data-label="Category">${t.category}</td>
+                                        <td data-label="Priority"><span class="badge ${t.priority === 'HIGH' ? 'badge-danger' : 'badge-neutral'}">${t.priority}</span></td>
+                                        <td data-label="Status"><span class="badge badge-warning">${t.status}</span></td>
+                                        <td data-label="SLA Expiration" style="font-family:var(--mono)">${new Date(t.sla_expires_at).toLocaleString()}</td>
+                                        <td data-label="Control">${ctrl || '-'}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (e) {
+                container.innerHTML = '<p>Error loading tickets.</p>';
+            }
+        }
+
+        async function transitionTicket(id, status) {
+            try {
+                const res = await fetch(`/api/os/complaints/${id}/transition`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                if (res.ok) fetchTickets();
+                else alert('Ticket transition failed.');
+            } catch (err) {
+                alert('Connection failure.');
+            }
+        }
+
+        async function fetchReviews() {
+            const container = document.getElementById('reviews-table-container');
+            try {
+                const res = await fetch('/api/os/reviews', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const rows = await res.json();
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Author</th>
+                                <th>Rating</th>
+                                <th>Comment</th>
+                                <th>Moderation</th>
+                                <th>Action Controls</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(r => {
+                                let ctrl = '';
+                                if (r.status === 'PENDING') {
+                                    ctrl += `<button class="btn-action" onclick="moderateReview(${r.id}, 'APPROVED')">Approve</button>`;
+                                    ctrl += `<button class="btn-action danger" onclick="moderateReview(${r.id}, 'HIDDEN')">Hide</button>`;
+                                }
+                                ctrl += `<button class="btn-action" onclick="triggerReviewResponse(${r.id})">Respond</button>`;
+                                return `
+                                    <tr>
+                                        <td data-label="Product">${r.product_name} (${r.variant_name || 'Standard'})</td>
+                                        <td data-label="Author"><strong>${r.customer_name}</strong></td>
+                                        <td data-label="Rating" style="color:var(--primary)">${'★'.repeat(r.rating)}</td>
+                                        <td data-label="Comment">${r.comment}</td>
+                                        <td data-label="Moderation"><span class="badge ${r.status === 'APPROVED' ? 'badge-success' : 'badge-warning'}">${r.status}</span></td>
+                                        <td data-label="Action Controls">${ctrl}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (e) {
+                container.innerHTML = '<p>Error loading reviews queue.</p>';
+            }
+        }
+
+        async function moderateReview(id, status) {
+            try {
+                const res = await fetch(`/api/os/reviews/${id}/moderate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                if (res.ok) fetchReviews();
+                else alert('Moderation commit failed.');
+            } catch (err) {
+                alert('Connection error.');
+            }
+        }
+
+        function triggerReviewResponse(id) {
+            currentResponseReviewId = id;
+            document.getElementById('review-response-text').value = '';
+            openModal('modal-review-respond');
+        }
+
+        async function submitReviewResponse() {
+            const respText = document.getElementById('review-response-text').value.trim();
+            if (!respText) return alert('Response cannot be blank.');
+
+            try {
+                const res = await fetch(`/api/os/reviews/${currentResponseReviewId}/respond`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ merchant_response: respText })
+                });
+
+                if (res.ok) {
+                    closeModal('modal-review-respond');
+                    fetchReviews();
+                } else alert('Failed to record response.');
+            } catch (err) {
+                alert('Connection failure.');
+            }
+        }
+
+        async function fetchInquiries() {
+            const container = document.getElementById('inquiries-table-container');
+            try {
+                const res = await fetch('/api/os/inquiries', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                let rows = [];
+                if (res.ok) {
+                    rows = await res.json();
+                } else {
+                    const fallback = await fetch('/api/admin/inquiries', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    rows = await fallback.json();
+                }
+
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Trade Guidelines Inquiry</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(inq => `
+                                <tr>
+                                    <td data-label="Date">${new Date(inq.created_at).toLocaleDateString()}</td>
+                                    <td data-label="Name"><strong>${inq.name}</strong></td>
+                                    <td data-label="Email">${inq.email}</td>
+                                    <td data-label="Inquiry" style="line-height:1.4">${inq.message}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (e) {
+                container.innerHTML = '<p>Error loading inquiries.</p>';
+            }
+        }
+
+        // Mobile Header Nav Menu Toggle
+        document.getElementById('menu-toggle-btn').addEventListener('click', () => {
+            document.querySelector('.os-sidebar').classList.toggle('open');
+        });
+        document.querySelectorAll('.os-nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelector('.os-sidebar').classList.remove('open');
+            });
+        });
+
+        // --- COMMAND PALETTE ENGINE (Ctrl + K) ---
+
+        const shortcuts = [
+            { text: 'Switch to Dashboard Overview', action: () => switchTab('overview') },
+            { text: 'Switch to Order Management System (OMS)', action: () => switchTab('orders') },
+            { text: 'Switch to Perpetual Inventory Summary', action: () => switchTab('inventory') },
+            { text: 'Switch to CRM Customers segment database', action: () => switchTab('crm') },
+            { text: 'Switch to SLA Complaints Ticketing Queue', action: () => switchTab('tickets') },
+            { text: 'Switch to Reviews Moderation CMS', action: () => switchTab('reviews') },
+            { text: 'Switch to Wholesale Trade inquiries', action: () => switchTab('inquiries') },
+            { text: 'Diagnostics: Run technical system diagnostics', action: async () => {
+                alert('Triggering diagnostics check...');
+                const res = await fetch('/api/os/intelligence/dashboard', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                alert(`Diagnostics result:\n- Integrity Check: ${data.diagnostics.database.integrityCheck}\n- Ping latency: ${data.diagnostics.database.pingMs}ms\n- Vault count: ${data.diagnostics.diskStorage.vaultSize.fileCount} files`);
+            }},
+            { text: 'Reports: Manually generate nightly closing report', action: async () => {
+                const res = await fetch('/api/os/intelligence/closing-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ date: new Date().toISOString().split('T')[0] })
+                });
+                if (res.ok) alert('Daily closing report generated successfully and saved to document vault.');
+                else alert('Report generation failed.');
+            }}
+        ];
+
+        let selectedPaletteIndex = 0;
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                togglePalette(true);
+            }
+            if (e.key === 'Escape') {
+                togglePalette(false);
+            }
+        });
+
+        function togglePalette(show) {
+            const overlay = document.getElementById('palette-overlay');
+            overlay.style.display = show ? 'flex' : 'none';
+            if (show) {
+                const search = document.getElementById('palette-search');
+                search.value = '';
+                search.focus();
+                renderPaletteResults('');
+            }
+        }
+
+        document.getElementById('palette-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'palette-overlay') togglePalette(false);
+        });
+
+        document.getElementById('palette-search').addEventListener('input', (e) => {
+            renderPaletteResults(e.target.value);
+        });
+
+        document.getElementById('palette-search').addEventListener('keydown', (e) => {
+            const items = document.querySelectorAll('.palette-item');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedPaletteIndex = (selectedPaletteIndex + 1) % items.length;
+                highlightPaletteItem(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedPaletteIndex = (selectedPaletteIndex - 1 + items.length) % items.length;
+                highlightPaletteItem(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (items[selectedPaletteIndex]) items[selectedPaletteIndex].click();
+            }
+        });
+
+        function renderPaletteResults(query) {
+            const resultsUl = document.getElementById('palette-results');
+            resultsUl.innerHTML = '';
+            selectedPaletteIndex = 0;
+
+            const filtered = shortcuts.filter(s => s.text.toLowerCase().includes(query.toLowerCase()));
+            if (filtered.length === 0) {
+                resultsUl.innerHTML = '<li class="palette-item" style="cursor:default">No shortcuts found.</li>';
+                return;
+            }
+
+            filtered.forEach((s, idx) => {
+                const li = document.createElement('li');
+                li.className = `palette-item ${idx === 0 ? 'active' : ''}`;
+                li.textContent = s.text;
+                li.addEventListener('click', () => {
+                    togglePalette(false);
+                    s.action();
+                });
+                resultsUl.appendChild(li);
+            });
+        }
+
+        function highlightPaletteItem(items) {
+            items.forEach((item, idx) => {
+                if (idx === selectedPaletteIndex) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+        }
+
+        // Init load
+        switchTab('overview');
+    </script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House of Singhana — Custodians of Standards</title>
+    <meta name="description" content="House of Singhana by Kalu Masaley Wala. A modern merchant house. Custodians of standards passed down through generations. Singhana, Jhunjhunu, Rajasthan.">
+    <meta name="theme-color" content="#F4F4F2">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <!-- Scroll Progress Indicator & Dynamic Background Blobs -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <div class="ambient-blobs-container">
+        <div class="ambient-blob blob-1"></div>
+        <div class="ambient-blob blob-2"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="mainNav">
+        <a href="#hero" class="nav-brand magnetic" data-strength="20">
+            <svg class="nav-scale" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="50" y1="20" x2="50" y2="70" />
+                <circle cx="50" cy="16" r="3" />
+                <line x1="20" y1="30" x2="80" y2="30" />
+                <polygon points="48,30 50,22 52,30" fill="currentColor" stroke="none" />
+                <line x1="20" y1="30" x2="12" y2="58" />
+                <line x1="20" y1="30" x2="28" y2="58" />
+                <path d="M 10,58 Q 20,64 30,58 Z" />
+                <line x1="80" y1="30" x2="72" y2="58" />
+                <line x1="80" y1="30" x2="88" y2="58" />
+                <path d="M 70,58 Q 80,64 90,58 Z" />
+            </svg>
+            <span>House of Singhana</span>
+        </a>
+        <div class="nav-links">
+            <a href="#trade" class="magnetic" data-strength="15">Trade</a>
+            <a href="#standard" class="magnetic" data-strength="15">Standard</a>
+            <a href="#selection" class="magnetic" data-strength="15">Selection</a>
+            <a href="checkout.html" id="nav-cart-link" class="magnetic" data-strength="15">Cart (0)</a>
+            <a href="login.html" id="nav-auth-link" class="magnetic" data-strength="15">Login</a>
+        </div>
+        <button class="nav-hamburger" id="nav-hamburger-btn" aria-label="Open Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- Mobile Nav Drawer -->
+    <div class="nav-drawer" id="nav-drawer">
+        <button class="nav-drawer-close" id="nav-drawer-close" aria-label="Close Menu">✕</button>
+        <a href="#trade" onclick="closeNavDrawer()">Trade</a>
+        <a href="#standard" onclick="closeNavDrawer()">Standard</a>
+        <a href="#selection" onclick="closeNavDrawer()">Selection</a>
+        <a href="checkout.html" id="drawer-cart-link">Cart (0)</a>
+        <a href="login.html" id="drawer-auth-link">Login</a>
+    </div>
+
+
+    <main>
+
+        <!-- ═══ 1. THE OPENING ═══ -->
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <h1 class="hero-title title-reveal">House of Singhana</h1>
+                <span class="hero-byline reveal fade-up">by Kalu Masaley Wala</span>
+                <p class="hero-tagline reveal fade-up">Custodians of standards passed down through generations.</p>
+            </div>
+        </section>
+
+        <!-- ═══ CONTINUOUS TICKER ═══ -->
+        <div class="ticker-wrapper bg-ink text-concrete">
+            <div class="ticker">
+                <div class="ticker-content">
+                    <span>CUSTODIANS OF STANDARDS</span><span class="dot">•</span>
+                    <span>ESTABLISHED 1990</span><span class="dot">•</span>
+                    <span>SINGHANA, RAJASTHAN</span><span class="dot">•</span>
+                    <span>THE TOOLS CHANGED. THE JUDGMENT DIDN'T.</span><span class="dot">•</span>
+                </div>
+                <div class="ticker-content" aria-hidden="true">
+                    <span>CUSTODIANS OF STANDARDS</span><span class="dot">•</span>
+                    <span>ESTABLISHED 1990</span><span class="dot">•</span>
+                    <span>SINGHANA, RAJASTHAN</span><span class="dot">•</span>
+                    <span>THE TOOLS CHANGED. THE JUDGMENT DIDN'T.</span><span class="dot">•</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ THE VOLUMES ═══ -->
+        <section class="packaging" id="volumes">
+            <div class="packaging-inner">
+                <div class="packaging-header reveal fade-up">
+                    <span class="section-label">Volumes</span>
+                    <h2 class="packaging-title">Built for the kitchen. Scaled for the trade.</h2>
+                    <p class="packaging-desc">From premium retail batches packed in traditional fine jute sacks to our institutional wholesale standards. No synthetic pouches. Just single-origin spices, pulverised (not grinded), and hand-inspected with old-world merchant pride.</p>
+                </div>
+
+                <div class="packaging-images">
+                    <a href="#storefront" class="pkg-image-wrapper image-reveal-container parallax-container hover-zoom reveal fade-up" style="text-decoration: none; display: block;">
+                        <div class="image-reveal-mask"></div>
+                        <img src="assets/retail_lineup.png" class="parallax-img" alt="Retail packaging lineup: fine jute bags with custom merchant tags" loading="lazy">
+                        <span class="caption reveal fade-up">The Retail Series. Fine Jute Sacks.</span>
+                    </a>
+                    <a href="trade.html" class="pkg-image-wrapper image-reveal-container parallax-container hover-zoom reveal fade-up delay-1" style="text-decoration: none; display: block;">
+                        <div class="image-reveal-mask"></div>
+                        <img src="assets/bulk_sack.png" class="parallax-img" alt="Wholesale institutional bulk sacks" loading="lazy">
+                        <span class="caption reveal fade-up">The Wholesale Standard. Institutional Jute.</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="products-preview" id="storefront" style="padding: 80px 40px; max-width: 1200px; margin: 0 auto;">
+            <div class="product-cards-grid reveal fade-up" style="text-align: left;">
+                <a href="product.html?id=chilli" class="product-card magnetic" data-strength="10">
+                    <div class="product-card-img">
+                        <img src="assets/chilli.png" alt="Chilli" loading="lazy">
+                    </div>
+                    <div class="product-card-info">
+                        <h3>Chilli</h3>
+                        <span class="price-tag">₹860 / kg</span>
+                        <span class="view-btn">Select Sizes</span>
+                    </div>
+                </a>
+                
+                <a href="product.html?id=turmeric" class="product-card magnetic" data-strength="10">
+                    <div class="product-card-img">
+                        <img src="assets/turmeric.png" alt="Turmeric" loading="lazy">
+                    </div>
+                    <div class="product-card-info">
+                        <h3>Turmeric</h3>
+                        <span class="price-tag">₹680 / kg</span>
+                        <span class="view-btn">Select Sizes</span>
+                    </div>
+                </a>
+                
+                <a href="product.html?id=coriander" class="product-card magnetic" data-strength="10">
+                    <div class="product-card-img">
+                        <img src="assets/coriander.png" alt="Coriander" loading="lazy">
+                    </div>
+                    <div class="product-card-info">
+                        <h3>Coriander</h3>
+                        <span class="price-tag">₹620 / kg</span>
+                        <span class="view-btn">Select Sizes</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+
+
+        <!-- ═══ 2. THE TRADE ═══ -->
+        <section class="trade" id="trade">
+            <div class="trade-intro reveal fade-up">
+                <p class="trade-observation">There was a time when the person who sold you something had spent their entire life learning to judge it.</p>
+            </div>
+
+            <div class="trade-photo image-reveal-container parallax-container">
+                <div class="image-reveal-mask"></div>
+                <img src="assets/before_sunrise.png" class="parallax-img" alt="A grain yard before sunrise. A merchant checks his notebook beside truck headlights and a weighing scale." loading="lazy">
+                <span class="caption reveal fade-up">Before sunrise. The yard.</span>
+            </div>
+
+            <div class="trade-notes">
+                <p class="trade-note reveal stagger-up">3am. The trucks have arrived.</p>
+                <p class="trade-note reveal stagger-up">The first sack comes off. It is opened, checked by hand. The smell tells you more than the colour.</p>
+                <p class="trade-note reveal stagger-up">The scale is set. The weights are placed. Every reading goes into the ledger.</p>
+                <p class="trade-note reveal stagger-up">By the time the market opens, the serious decisions have already been made. Quietly. Without an audience.</p>
+            </div>
+
+            <div class="trade-photo image-reveal-container parallax-container">
+                <div class="image-reveal-mask"></div>
+                <img src="assets/mandi_hero.png" class="parallax-img" alt="Workers unloading grain sacks at a mandi. Trucks, dust, weight, movement." loading="lazy">
+                <span class="caption reveal fade-up">The mandi. Sacks weighed. Decisions made.</span>
+            </div>
+
+            <div class="trade-ledger reveal fade-up">
+                <div class="trade-ledger-img parallax-container hover-zoom">
+                    <img src="assets/ledger.png" class="parallax-img" alt="A bahi-khata. The merchant's handwritten ledger. Small brass scales rest on the open pages." loading="lazy">
+                </div>
+                <div class="trade-ledger-text">
+                    <p>The <span class="serif-text">bahi-khata</span> recorded every transaction. Every weight. Every decision.</p>
+                    <p>There was no undo. You got the quality right the first time, because your name was the only currency that actually mattered.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 3. THE TRUST ═══ -->
+        <section class="trust">
+            <div class="trust-grid">
+                <div class="trust-text reveal fade-up">
+                    <p>An elderly man walked into the office with his great-grandson. During the conversation, he asked where the family was from.</p>
+                    <p>When he heard the answer, he paused. Then he told us that the provisions for his own wedding — decades ago — had come from this family.</p>
+                    <p>He remembered. Not because anyone asked him to. Because the transaction had been done right.</p>
+                    <p>No rating system produced that memory. No loyalty programme kept it alive. It survived because the original work was honest.</p>
+                    <p class="trust-aside reveal fade-right">Word of mouth is the oldest algorithm. It still runs on the same input: did you do the work right?</p>
+                </div>
+                <div class="trust-img image-reveal-container parallax-container">
+                    <div class="image-reveal-mask"></div>
+                    <img src="assets/grandfather_merchant.png" class="parallax-img" alt="A merchant seated in his shop. Scales to his left. Ledger open. Jars of spices behind him." loading="lazy">
+                    <span class="caption reveal fade-up">Shekhawati, Rajasthan.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ CONTINUOUS TICKER (Alternate) ═══ -->
+        <div class="ticker-wrapper bg-concrete-mid text-saffron">
+            <div class="ticker ticker-reverse">
+                <div class="ticker-content">
+                    <span>NOT A BRAND. A PRACTICE.</span><span class="dot">•</span>
+                    <span>SELECTED BY JUDGMENT.</span><span class="dot">•</span>
+                    <span>NOT A BRAND. A PRACTICE.</span><span class="dot">•</span>
+                    <span>SELECTED BY JUDGMENT.</span><span class="dot">•</span>
+                </div>
+                <div class="ticker-content" aria-hidden="true">
+                    <span>NOT A BRAND. A PRACTICE.</span><span class="dot">•</span>
+                    <span>SELECTED BY JUDGMENT.</span><span class="dot">•</span>
+                    <span>NOT A BRAND. A PRACTICE.</span><span class="dot">•</span>
+                    <span>SELECTED BY JUDGMENT.</span><span class="dot">•</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ 4. THE CONTINUITY ═══ -->
+        <section class="continuity">
+            <div class="continuity-inner">
+                <div class="continuity-text reveal fade-up">
+                    <p>My grandfather opened his ledger before sunrise in Jasrapur. He weighed grain on brass scales, wrote every transaction by hand, and built a reputation that travelled further than he ever did.</p>
+                    <p>My father carried those standards into a spice business. Kalu Masaley Wala, 1990. Same discipline, different product. He taught me that a name is not something you inherit. It is something you re-earn every morning.</p>
+                    <p>Today, a ledger sits beside a laptop. Conversations happen over a phone. Procurement reaches further than a bicycle ever could.</p>
+                    <p>But the first thing I do each morning is the same thing my grandfather did.</p>
+                    <p>Open a sack. Check the quality. Decide.</p>
+                </div>
+                <div class="continuity-statement reveal scale-up">
+                    <p>The tools changed.</p>
+                    <p>The judgment didn't.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 5. THE DESK ═══ -->
+        <section class="desk-section">
+            <div class="desk-inner">
+                <div class="desk-image image-reveal-container parallax-container hover-zoom">
+                    <div class="image-reveal-mask"></div>
+                    <img src="assets/merchant_desk.png" class="parallax-img" alt="A modern merchant CEO's office. Empty chair facing a desk with a MacBook, open bahi-khata, bill counter, brass weights, and spice samples." loading="lazy">
+                </div>
+                <p class="desk-caption reveal fade-up">Before the first transaction, there is always a moment of stillness.</p>
+            </div>
+        </section>
+
+        <!-- ═══ 6. THE BREAK ═══ -->
+        <section class="the-break">
+            <div class="break-inner">
+                <h2 class="break-headline reveal fade-up">
+                    <span>Convenience improved.</span>
+                    <span class="text-dust">Standards quietly declined.</span>
+                </h2>
+                <div class="break-body reveal fade-up delay-1">
+                    <p>Not because anyone chose to lower them. But because the people who once stood between the source and the kitchen — the merchants who staked their name on what they sold — gradually disappeared.</p>
+                    <p>They were replaced by supply chains. By packaging that made promises the contents didn't keep.</p>
+                    <p>The person who knew the product was replaced by the label that described it.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 7. THE CONVICTION ═══ -->
+        <section class="conviction" id="standard">
+            <div class="conviction-inner">
+                <div class="conviction-text reveal fade-up">
+                    <h2 class="conviction-lead">We believe the way things are chosen still matters.</h2>
+                    <p>A merchant house is not a brand. It is a practice. The act of selecting, judging, and staking your name on what you sell. Every day.</p>
+                    <p>House of Singhana exists because someone in this family decided that this practice should not disappear.</p>
+                </div>
+                <div class="conviction-img image-reveal-container parallax-container hover-zoom">
+                    <div class="image-reveal-mask"></div>
+                    <img src="assets/scales.png" class="parallax-img" alt="Brass weighing scales. Turmeric in one pan. The standard, measured." loading="lazy">
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 8. THE SELECTION ═══ -->
+        <section class="selection" id="selection">
+            <div class="selection-inner">
+                <div class="selection-header reveal fade-up">
+                    <span class="section-label">The Selection</span>
+                    <h2 class="selection-title">Three things. Selected by judgment. Not variety — conviction.</h2>
+                </div>
+
+                <article class="product" id="product-turmeric">
+                    <div class="product-img image-reveal-container parallax-container hover-zoom">
+                        <div class="image-reveal-mask"></div>
+                        <img src="assets/turmeric.png" class="parallax-img" alt="Ground turmeric and raw roots on dark stone." loading="lazy">
+                    </div>
+                    <div class="product-body reveal fade-left">
+                        <span class="product-num">01</span>
+                        <h3>Turmeric</h3>
+                        <p>Most turmeric is sold on colour alone. A bright yellow tells the buyer nothing about what is inside.</p>
+                        <p>We select on three criteria: colour, aroma, and curcumin density. If it fails any one of the three, it goes back.</p>
+                        <p class="product-note">A merchant learns to judge aroma before appearance. That is the difference between selling turmeric and knowing turmeric.</p>
+                    </div>
+                </article>
+
+                <article class="product product-alt" id="product-chilli">
+                    <div class="product-img image-reveal-container parallax-container hover-zoom">
+                        <div class="image-reveal-mask"></div>
+                        <img src="assets/chilli.png" class="parallax-img" alt="Dried red chillies on a worn wooden surface. A brass weight sits to the side." loading="lazy">
+                    </div>
+                    <div class="product-body reveal fade-right">
+                        <span class="product-num">02</span>
+                        <h3>Chilli</h3>
+                        <p>Chilli is not one thing. Different dishes need different heat.</p>
+                        <div class="product-tabs">
+                            <div class="tabs-nav">
+                                <button class="tab-btn active" data-target="tab-everyday">Everyday</button>
+                                <button class="tab-btn" data-target="tab-heat">Heat</button>
+                                <button class="tab-btn" data-target="tab-colour">Colour</button>
+                            </div>
+                            <div class="tabs-content">
+                                <div class="tab-pane active" id="tab-everyday">
+                                    <strong>For everyday cooking</strong>
+                                    <span>Balanced heat. Consistent colour. The one that works in everything.</span>
+                                </div>
+                                <div class="tab-pane" id="tab-heat">
+                                    <strong>For heat</strong>
+                                    <span>High capsaicin. Sharp, direct warmth.</span>
+                                </div>
+                                <div class="tab-pane" id="tab-colour">
+                                    <strong>For colour and aroma</strong>
+                                    <span>Low heat. Deep crimson. For the dish that needs to look right.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="product-note">A merchant who knows the product does not sell everything under one name.</p>
+                    </div>
+                </article>
+
+                <article class="product" id="product-coriander">
+                    <div class="product-img image-reveal-container parallax-container hover-zoom">
+                        <div class="image-reveal-mask"></div>
+                        <img src="assets/coriander.png" class="parallax-img" alt="Coriander seeds on a grinding stone. Some crushed, some whole." loading="lazy">
+                    </div>
+                    <div class="product-body reveal fade-left">
+                        <span class="product-num">03</span>
+                        <h3>Coriander</h3>
+                        <p>The spice most people do not notice until it is wrong.</p>
+                        <p>Ground well, it adds a citrus-clean base that holds everything else together. Ground carelessly, it tastes like dust.</p>
+                        <p class="product-note">We grind at low temperature to preserve the volatile oils. The difference is noticeable in the first thirty seconds of cooking.</p>
+                    </div>
+                </article>
+
+                <div class="selection-evidence image-reveal-container parallax-container hover-zoom">
+                    <div class="image-reveal-mask"></div>
+                    <img src="assets/spices.png" class="parallax-img" alt="Three piles of ground spice on handmade paper. Turmeric. Chilli. Coriander." loading="lazy">
+                    <span class="caption reveal fade-up">The selection. Turmeric. Chilli. Coriander.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 10. THE CLOSING ═══ -->
+        <section class="closing" id="inquire">
+            <div class="closing-inner">
+                <div class="closing-text reveal fade-up">
+                    <p>We inherited these standards.</p>
+                    <p>We are responsible for carrying them forward.</p>
+                </div>
+                <p class="closing-daily reveal fade-up delay-1">Every morning. Every sack. Every decision.</p>
+                <div class="closing-brand reveal scale-up delay-2">
+                    <svg class="closing-scale" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="50" y1="20" x2="50" y2="70" />
+                        <circle cx="50" cy="16" r="3" />
+                        <line x1="20" y1="30" x2="80" y2="30" />
+                        <polygon points="48,30 50,22 52,30" fill="currentColor" stroke="none" />
+                        <line x1="20" y1="30" x2="12" y2="58" />
+                        <line x1="20" y1="30" x2="28" y2="58" />
+                        <path d="M 10,58 Q 20,64 30,58 Z" />
+                        <line x1="80" y1="30" x2="72" y2="58" />
+                        <line x1="80" y1="30" x2="88" y2="58" />
+                        <path d="M 70,58 Q 80,64 90,58 Z" />
+                    </svg>
+                    <span class="closing-name">House of Singhana</span>
+                    <span class="closing-byline">by Kalu Masaley Wala</span>
+                    <span class="closing-location">Singhana, Jhunjhunu, Rajasthan</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>© 2026 House of Singhana</span>
+            <a href="#" class="magnetic" data-strength="10">Contact</a>
+            <a href="#" class="magnetic" data-strength="10">Instagram</a>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // Mobile nav drawer toggle
+        function closeNavDrawer() {
+            document.getElementById('nav-drawer').classList.remove('open');
+        }
+
+        document.getElementById('nav-hamburger-btn').addEventListener('click', () => {
+            document.getElementById('nav-drawer').classList.add('open');
+        });
+
+        document.getElementById('nav-drawer-close').addEventListener('click', closeNavDrawer);
+
+        // Sync drawer cart count and auth state with main nav
+        const syncDrawer = () => {
+            const cartLink = document.getElementById('nav-cart-link');
+            const authLink = document.getElementById('nav-auth-link');
+            if (cartLink) document.getElementById('drawer-cart-link').textContent = cartLink.textContent;
+            if (authLink) document.getElementById('drawer-auth-link').textContent = authLink.textContent;
+        };
+
+        // Observe main nav for content changes (cart count updates)
+        const navObserver = new MutationObserver(syncDrawer);
+        const navLinksEl = document.querySelector('.nav-links');
+        if (navLinksEl) navObserver.observe(navLinksEl, { subtree: true, characterData: true, childList: true });
+
+        // Initial sync after main.js has run
+        setTimeout(syncDrawer, 200);
+    </script>
+</body>
+</html>

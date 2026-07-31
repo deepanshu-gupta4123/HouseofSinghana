@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account — House of Singhana</title>
+    <meta name="description" content="Manage your delivery addresses and account settings for House of Singhana.">
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .account-container {
+            padding: 120px 40px 80px;
+            max-width: 760px;
+            margin: 0 auto;
+            min-height: 80vh;
+        }
+
+        .account-header {
+            margin-bottom: 48px;
+            border-bottom: 1px solid var(--concrete-dark);
+            padding-bottom: 24px;
+        }
+
+        .account-header h1 {
+            font-family: var(--serif);
+            font-size: 2.2rem;
+            color: var(--ink);
+            margin-bottom: 6px;
+        }
+
+        .account-header p {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--dust);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-heading h2 {
+            font-family: var(--sans);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--dust);
+        }
+
+        .section-heading button {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: none;
+            border: 1px solid var(--ink);
+            color: var(--ink);
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 40px;
+        }
+
+        .section-heading button:hover {
+            background: var(--ink);
+            color: var(--concrete);
+        }
+
+        .addresses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .address-card {
+            background: var(--concrete-mid);
+            border: 1px solid var(--concrete-dark);
+            padding: 20px;
+            transition: border-color 0.2s ease;
+        }
+
+        .address-card.default-card {
+            border-color: var(--saffron);
+        }
+
+        .address-card-label {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--saffron-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .default-badge {
+            background: var(--saffron-dark);
+            color: var(--concrete);
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            border-radius: 2px;
+        }
+
+        .address-card-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .address-card-text {
+            font-size: 0.85rem;
+            color: var(--ink-soft);
+            line-height: 1.6;
+        }
+
+        .address-card-phone {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            color: var(--dust);
+            margin-top: 8px;
+        }
+
+        .address-card-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--concrete-dark);
+        }
+
+        .address-card-actions button {
+            background: none;
+            border: none;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.2s;
+            min-height: 32px;
+        }
+
+        .btn-remove { color: var(--dust); }
+        .btn-remove:hover { color: #ef4444; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--dust);
+            border: 1px dashed var(--concrete-dark);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            line-height: 1.7;
+        }
+
+        .add-form-panel {
+            background: var(--concrete-mid);
+            border: 1px solid var(--concrete-dark);
+            padding: 32px;
+            margin-bottom: 32px;
+            display: none;
+        }
+
+        .add-form-panel.open { display: block; }
+
+        .add-form-panel h3 {
+            font-family: var(--serif);
+            font-size: 1.4rem;
+            color: var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-grid.full { grid-template-columns: 1fr; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--dust);
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px;
+            font-family: var(--sans);
+            font-size: 0.95rem;
+            border: 1px solid var(--concrete-dark);
+            background: var(--concrete);
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--saffron);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-save {
+            padding: 14px 28px;
+            background: var(--ink);
+            color: var(--concrete);
+            font-family: var(--sans);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-height: 52px;
+        }
+
+        .btn-save:hover { background: var(--saffron-dark); }
+        .btn-save:disabled { background: var(--concrete-dark); cursor: not-allowed; }
+
+        .btn-cancel {
+            padding: 14px 20px;
+            background: none;
+            border: 1px solid var(--concrete-dark);
+            color: var(--dust);
+            font-family: var(--sans);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 52px;
+        }
+
+        .btn-cancel:hover { border-color: var(--dust); color: var(--ink); }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--ink);
+            color: var(--concrete);
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            padding: 12px 24px;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 9999;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .signout-section {
+            border-top: 1px solid var(--concrete-dark);
+            padding-top: 32px;
+            margin-top: 8px;
+        }
+
+        .btn-signout {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: none;
+            border: none;
+            color: var(--dust);
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .btn-signout:hover { color: #ef4444; }
+
+        @media (max-width: 640px) {
+            .account-container { padding: 100px 20px 60px; }
+            .account-header h1 { font-size: 1.8rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .addresses-grid { grid-template-columns: 1fr; }
+            .add-form-panel { padding: 20px; }
+            .form-actions { flex-direction: column; }
+            .btn-save, .btn-cancel { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <nav class="nav" id="mainNav">
+        <a href="index.html" class="nav-brand">
+            <svg class="nav-scale" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="50" y1="20" x2="50" y2="70" />
+                <circle cx="50" cy="16" r="3" />
+                <line x1="20" y1="30" x2="80" y2="30" />
+                <polygon points="48,30 50,22 52,30" fill="currentColor" stroke="none" />
+                <line x1="20" y1="30" x2="12" y2="58" />
+                <line x1="20" y1="30" x2="28" y2="58" />
+                <path d="M 10,58 Q 20,64 30,58 Z" />
+                <line x1="80" y1="30" x2="72" y2="58" />
+                <line x1="80" y1="30" x2="88" y2="58" />
+                <path d="M 70,58 Q 80,64 90,58 Z" />
+            </svg>
+            <span>House of Singhana</span>
+        </a>
+        <div class="nav-links">
+            <a href="checkout.html" id="nav-cart-link">Cart (0)</a>
+            <a href="account.html">Account</a>
+        </div>
+    </nav>
+
+    <main class="account-container">
+
+        <div class="account-header">
+            <h1>My Account</h1>
+            <p id="account-email-display">—</p>
+        </div>
+
+        <!-- Delivery Addresses -->
+        <div class="section-heading">
+            <h2>Delivery Addresses</h2>
+            <button id="add-address-btn">+ Add Address</button>
+        </div>
+
+        <!-- Add New Address Form -->
+        <div class="add-form-panel" id="add-form-panel">
+            <h3>New Delivery Address</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Recipient Name *</label>
+                    <input type="text" id="f-name" placeholder="Full name" autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="f-phone" placeholder="+91 99999 99999" autocomplete="tel">
+                </div>
+            </div>
+            <div class="form-grid full">
+                <div class="form-group">
+                    <label>Address Line 1 *</label>
+                    <input type="text" id="f-line1" placeholder="Flat, House no, Building" autocomplete="address-line1">
+                </div>
+            </div>
+            <div class="form-grid full">
+                <div class="form-group">
+                    <label>Address Line 2</label>
+                    <input type="text" id="f-line2" placeholder="Area, Colony, Street (Optional)" autocomplete="address-line2">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>City *</label>
+                    <input type="text" id="f-city" placeholder="City" autocomplete="address-level2">
+                </div>
+                <div class="form-group">
+                    <label>State *</label>
+                    <input type="text" id="f-state" placeholder="State" autocomplete="address-level1">
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Pincode *</label>
+                    <input type="text" id="f-pincode" placeholder="6-digit pincode" inputmode="numeric" maxlength="6" autocomplete="postal-code">
+                </div>
+                <div class="form-group">
+                    <label>Address Label</label>
+                    <select id="f-label">
+                        <option value="Home">Home</option>
+                        <option value="Work">Work</option>
+                        <option value="Warehouse">Warehouse</option>
+                        <option value="Trade">Trade Address</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn-save" id="save-address-btn">Save Address</button>
+                <button class="btn-cancel" id="cancel-add-btn">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Saved Addresses -->
+        <div class="addresses-grid" id="addresses-grid">
+            <div class="empty-state">
+                <p>Loading addresses...</p>
+            </div>
+        </div>
+
+        <!-- Sign Out -->
+        <div class="signout-section">
+            <button class="btn-signout" id="signout-btn">Sign out of this account</button>
+        </div>
+
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="main.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        let addresses = [];
+
+        // Decode email from JWT payload
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            document.getElementById('account-email-display').textContent = payload.email || 'Account';
+        } catch (e) {
+            document.getElementById('account-email-display').textContent = 'Account';
+        }
+
+        // Toast
+        function showToast(msg, duration = 2800) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), duration);
+        }
+
+        // Load addresses
+        async function loadAddresses() {
+            try {
+                const res = await fetch('/api/store/addresses', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                addresses = res.ok ? await res.json() : [];
+            } catch (e) {
+                addresses = [];
+            }
+            renderAddresses();
+        }
+
+        // Render address cards
+        function renderAddresses() {
+            const grid = document.getElementById('addresses-grid');
+            grid.innerHTML = '';
+
+            if (addresses.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <p>No saved addresses yet.<br>Add a delivery address to speed up future checkouts.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            addresses.forEach(addr => {
+                const label = addr.address_label || addr.label || 'Address';
+                const phone = addr.phone || addr.recipient_phone || '';
+                const card = document.createElement('div');
+                card.className = `address-card${addr.is_default ? ' default-card' : ''}`;
+                card.innerHTML = `
+                    <div class="address-card-label">
+                        ${label}
+                        ${addr.is_default ? '<span class="default-badge">Default</span>' : ''}
+                    </div>
+                    <div class="address-card-name">${addr.recipient_name}</div>
+                    <div class="address-card-text">
+                        ${addr.address_line1}${addr.address_line2 ? ', ' + addr.address_line2 : ''}<br>
+                        ${addr.city}, ${addr.state} — ${addr.pincode}
+                    </div>
+                    ${phone ? `<div class="address-card-phone">${phone}</div>` : ''}
+                    <div class="address-card-actions">
+                        <button class="btn-remove" onclick="removeAddress(${addr.id})">Remove</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Remove address
+        window.removeAddress = async function(id) {
+            if (!confirm('Remove this address from your profile?')) return;
+            try {
+                const res = await fetch(`/api/store/addresses/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    showToast('Address removed.');
+                    loadAddresses();
+                } else {
+                    showToast('Could not remove this address.');
+                }
+            } catch (e) {
+                showToast('Connection error.');
+            }
+        };
+
+        // Form toggle
+        const addBtn = document.getElementById('add-address-btn');
+        const formPanel = document.getElementById('add-form-panel');
+        const cancelBtn = document.getElementById('cancel-add-btn');
+
+        addBtn.addEventListener('click', () => {
+            const isOpen = formPanel.classList.toggle('open');
+            if (isOpen) {
+                formPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                setTimeout(() => document.getElementById('f-name').focus(), 300);
+            }
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            formPanel.classList.remove('open');
+            clearForm();
+        });
+
+        function clearForm() {
+            ['f-name','f-phone','f-line1','f-line2','f-city','f-state','f-pincode'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('f-label').value = 'Home';
+        }
+
+        // Save address
+        document.getElementById('save-address-btn').addEventListener('click', async () => {
+            const name    = document.getElementById('f-name').value.trim();
+            const phone   = document.getElementById('f-phone').value.trim();
+            const line1   = document.getElementById('f-line1').value.trim();
+            const line2   = document.getElementById('f-line2').value.trim();
+            const city    = document.getElementById('f-city').value.trim();
+            const state   = document.getElementById('f-state').value.trim();
+            const pincode = document.getElementById('f-pincode').value.trim();
+            const label   = document.getElementById('f-label').value;
+
+            if (!name || !phone || !line1 || !city || !state || !pincode) {
+                showToast('Please fill all required fields.');
+                return;
+            }
+
+            if (!/^\d{6}$/.test(pincode)) {
+                showToast('Pincode must be exactly 6 digits.');
+                return;
+            }
+
+            const btn = document.getElementById('save-address-btn');
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/store/addresses', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        address_label: label,
+                        recipient_name: name,
+                        phone,
+                        address_line1: line1,
+                        address_line2: line2,
+                        city,
+                        state,
+                        pincode,
+                        is_default: addresses.length === 0
+                    })
+                });
+
+                if (res.ok) {
+                    showToast('Address saved successfully.');
+                    formPanel.classList.remove('open');
+                    clearForm();
+                    loadAddresses();
+                } else {
+                    const err = await res.json();
+                    showToast(err.error || 'Failed to save. Please try again.');
+                }
+            } catch (e) {
+                showToast('Connection error. Please try again.');
+            } finally {
+                btn.textContent = 'Save Address';
+                btn.disabled = false;
+            }
+        });
+
+        // Sign out
+        document.getElementById('signout-btn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('cart');
+            window.location.href = 'login.html';
+        });
+
+        // Boot
+        loadAddresses();
+    </script>
+</body>
+</html>

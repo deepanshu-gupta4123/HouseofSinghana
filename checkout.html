@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - House of Singhana</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        .checkout-container { padding: 140px 40px 80px; max-width: 850px; margin: 0 auto; min-height: 80vh; color: var(--ink); }
+        .checkout-header { font-family: var(--serif); font-size: 2.5rem; margin-bottom: 40px; border-bottom: 1px solid var(--concrete-dark); padding-bottom: 24px; color: var(--ink); }
+        .cart-items { margin-bottom: 40px; }
+        .cart-item { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--concrete-dark); }
+        .cart-item-info { font-weight: 500; }
+        .cart-item-meta { font-size: 0.8rem; color: var(--dust); }
+        .cart-item-actions { display: flex; align-items: center; gap: 16px; margin-top: 8px; }
+        .qty-controls { display: flex; align-items: center; gap: 12px; border: 1px solid var(--concrete-dark); padding: 4px 12px; }
+        .qty-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--ink); padding: 0 4px; }
+        .qty-btn:hover { color: var(--saffron); }
+        .remove-btn { background: none; border: none; cursor: pointer; color: var(--dust); font-size: 0.8rem; text-transform: uppercase; text-decoration: underline; }
+        .remove-btn:hover { color: red; }
+        .payment-methods { margin-bottom: 40px; border-top: 1px solid var(--concrete-dark); padding-top: 24px; }
+        .payment-methods h3 { margin-bottom: 16px; font-family: var(--serif); font-size: 1.5rem; }
+        .method-option { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 1.1rem; cursor: pointer; }
+        .method-option input { width: 20px; height: 20px; cursor: pointer; accent-color: var(--ink); }
+        .pay-btn { width: 100%; padding: 20px; background: var(--ink); color: var(--concrete); font-family: var(--sans); text-transform: uppercase; cursor: pointer; border: none; font-size: 1rem; letter-spacing: 0.1em; transition: background 0.3s; }
+        .pay-btn:hover { background: var(--saffron); }
+
+        /* Premium Form Extensions */
+        .section-title { font-family: var(--serif); font-size: 1.5rem; margin-top: 40px; margin-bottom: 20px; border-bottom: 1px solid var(--concrete-dark); padding-bottom: 8px; color: var(--ink); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .form-grid.full { grid-template-columns: 1fr; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; color: var(--dust); }
+        .form-group input, .form-group textarea, .form-group select { padding: 12px; font-family: var(--sans); font-size: 1rem; border: 1px solid var(--concrete-dark); background: var(--concrete-mid); color: var(--ink); outline: none; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--saffron); }
+        .checkbox-label { display: flex; align-items: center; gap: 12px; font-size: 1rem; cursor: pointer; margin-bottom: 16px; }
+        .checkbox-label input { width: 18px; height: 18px; accent-color: var(--ink); }
+        .gift-options-panel { background: var(--concrete-mid); padding: 20px; border-left: 3px solid var(--saffron); margin-bottom: 24px; display: none; }
+        .coupon-section { display: flex; gap: 12px; margin-bottom: 24px; }
+        .coupon-section input { flex: 1; padding: 12px; font-family: var(--sans); border: 1px solid var(--concrete-dark); background: var(--concrete-mid); color: var(--ink); text-transform: uppercase; }
+        .coupon-btn { padding: 12px 24px; background: var(--ink); color: var(--concrete); text-transform: uppercase; font-family: var(--sans); cursor: pointer; border: none; }
+        .coupon-btn:hover { background: var(--saffron); }
+        .coupon-feedback { font-size: 0.85rem; margin-top: -16px; margin-bottom: 20px; font-family: var(--mono); }
+        .bill-summary { border-top: 1px solid var(--concrete-dark); padding-top: 24px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 8px; font-family: var(--mono); font-size: 0.95rem; }
+        .bill-row { display: flex; justify-content: space-between; color: var(--ink-soft); }
+        .bill-row.total { font-size: 1.4rem; font-weight: 600; color: var(--saffron); border-top: 1px solid var(--concrete-dark); padding-top: 12px; margin-top: 8px; }
+        .address-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        
+        /* Premium Radio Card Selectors */
+        .address-card, #payment-tiles .tile-option {
+            position: relative;
+            border: 1px solid var(--concrete-dark);
+            padding: 16px;
+            padding-right: 48px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background: var(--concrete-mid);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .address-card::after, #payment-tiles .tile-option::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1.5px solid var(--concrete-dark);
+            background: var(--concrete);
+            transition: all 0.25s ease;
+        }
+        .address-card:hover::after, #payment-tiles .tile-option:hover::after {
+            border-color: var(--saffron);
+        }
+        .address-card:hover, #payment-tiles .tile-option:hover {
+            border-color: var(--saffron-dark);
+            background: rgba(223, 223, 218, 0.3);
+        }
+        .address-card.selected, #payment-tiles .tile-option.selected {
+            border-color: var(--saffron);
+            background: var(--concrete-dark);
+        }
+        .address-card.selected::after, #payment-tiles .tile-option.selected::after {
+            border-color: var(--saffron);
+            background: var(--saffron);
+            box-shadow: inset 0 0 0 3px var(--concrete-dark);
+        }
+        .address-card h4 { margin-top: 0; margin-bottom: 8px; font-family: var(--serif); }
+        .address-card p { font-size: 0.85rem; color: var(--dust); margin: 0; }
+
+        /* Mobile-first responsive overrides */
+        @media (max-width: 640px) {
+            .checkout-container { padding: 100px 20px 140px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .address-cards { grid-template-columns: 1fr; }
+            .coupon-section { flex-direction: column; }
+            .coupon-btn { width: 100%; }
+            .checkout-header { font-size: 1.8rem; }
+            .section-title { font-size: 1.2rem; }
+            
+            /* Lock purchase button to bottom for thumb-reach */
+            .pay-btn {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                border-radius: 0;
+                padding: 22px;
+                background: var(--ink);
+                border-top: 1px solid var(--concrete-dark);
+                box-shadow: 0 -8px 24px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav" id="mainNav">
+        <a href="index.html" class="nav-brand"><span>House of Singhana</span></a>
+        <div class="nav-links">
+            <a href="checkout.html" id="nav-cart-link" class="magnetic" data-strength="15">Cart (0)</a>
+            <a href="login.html" id="nav-auth-link" class="magnetic" data-strength="15">Login</a>
+        </div>
+    </nav>
+    
+    <main class="checkout-container">
+        <h1 class="checkout-header">Checkout</h1>
+        <div class="cart-items" id="cart-items"></div>
+
+        <!-- address management section -->
+        <div id="address-section" style="display:none;">
+            <h3 class="section-title">Shipping Address</h3>
+            <div class="address-cards" id="saved-addresses-grid"></div>
+            
+            <div class="form-grid" id="new-address-form">
+                <div class="form-group">
+                    <label>Recipient Name</label>
+                    <input type="text" id="ship-name" placeholder="E.g. Devendra Singhana" autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="ship-phone" placeholder="E.g. +91 99999 99999" autocomplete="tel">
+                </div>
+                <div class="form-group">
+                    <label>Address Line 1</label>
+                    <input type="text" id="ship-line1" placeholder="Flat, House no, Building" autocomplete="address-line1">
+                </div>
+                <div class="form-group">
+                    <label>Address Line 2</label>
+                    <input type="text" id="ship-line2" placeholder="Area, Colony, Street" autocomplete="address-line2">
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="ship-city" placeholder="E.g. Singhana" autocomplete="address-level2">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" id="ship-state" placeholder="E.g. Rajasthan" autocomplete="address-level1">
+                </div>
+                <div class="form-group">
+                    <label>Pincode</label>
+                    <input type="text" id="ship-pincode" placeholder="6-digit Zip Code" autocomplete="postal-code" inputmode="numeric" maxlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Address Tag Label</label>
+                    <select id="ship-label">
+                        <option value="Home">Home</option>
+                        <option value="Office">Office</option>
+                        <option value="Parents">Parents</option>
+                    </select>
+                </div>
+            </div>
+
+            <label class="checkbox-label">
+                <input type="checkbox" id="save-new-address" checked>
+                <span>Save this address to my profile</span>
+            </label>
+        </div>
+
+        <!-- order notes section -->
+        <h3 class="section-title">Delivery Guidelines</h3>
+        <div class="form-grid full">
+            <div class="form-group">
+                <label>Order Notes / Instructions</label>
+                <textarea id="order-notes" rows="2" placeholder="E.g. Don't ring the bell. Deliver after 6 PM."></textarea>
+            </div>
+        </div>
+
+        <!-- gift options section -->
+        <h3 class="section-title">Gifting Selections</h3>
+        <label class="checkbox-label">
+            <input type="checkbox" id="is-gift-order">
+            <span>This is a gift order for family or clients</span>
+        </label>
+
+        <div class="gift-options-panel" id="gift-panel">
+            <div class="form-grid full">
+                <div class="form-group">
+                    <label>Gift Message</label>
+                    <textarea id="gift-message" rows="2" placeholder="E.g. Happy Anniversary! Enjoy Shekhawati spices."></textarea>
+                </div>
+            </div>
+            <label class="checkbox-label">
+                <input type="checkbox" id="gift-packaging">
+                <span>Add Premium Gift Wrap Packaging (+₹50)</span>
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="hide-invoice" checked>
+                <span>Do not include price invoice inside package box</span>
+            </label>
+        </div>
+
+        <!-- Coupon Engine section -->
+        <h3 class="section-title">Promo Coupons</h3>
+        <div class="coupon-section">
+            <input type="text" id="coupon-code" placeholder="Enter coupon code">
+            <button class="coupon-btn" id="apply-coupon-btn">Apply</button>
+        </div>
+        <div class="coupon-feedback" id="coupon-feedback"></div>
+
+        <!-- billing details summary -->
+        <h3 class="section-title">Bill Summary</h3>
+        <div class="bill-summary">
+            <div class="bill-row">
+                <span>Items Subtotal</span>
+                <span id="summary-subtotal">₹0.00</span>
+            </div>
+            <div class="bill-row">
+                <span>Delivery Charge</span>
+                <span id="summary-shipping">₹0.00</span>
+            </div>
+            <div class="bill-row" id="summary-discount-row" style="display:none; color: green;">
+                <span>Coupon Discount</span>
+                <span id="summary-discount">-₹0.00</span>
+            </div>
+            <div class="bill-row">
+                <span>Estimated Tax (inclusive GST)</span>
+                <span id="summary-tax">₹0.00</span>
+            </div>
+            <div class="bill-row total">
+                <span>Grand Total</span>
+                <span id="summary-total">₹0.00</span>
+            </div>
+        </div>
+        <div class="payment-methods" id="payment-methods" style="display:none;">
+            <h3 class="section-title">Select Payment Method</h3>
+            <div id="payment-tiles" class="tile-selector"></div>
+        </div>
+
+        <button class="pay-btn magnetic" data-strength="10" id="pay-btn">Proceed to Payment</button>
+    </main>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2"/>
+                    <path d="M50 20 L50 80 M20 40 L80 40 M30 60 L70 60" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="30" cy="70" r="4" fill="currentColor"/>
+                    <circle cx="70" cy="70" r="4" fill="currentColor"/>
+                </svg>
+                <h2>House of Singhana</h2>
+                <p>Since 1990</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const token = localStorage.getItem('token');
+        
+        if(!token) {
+            alert("Please login first.");
+            window.location.href = 'login.html';
+        }
+
+        const itemsContainer = document.getElementById('cart-items');
+        let savedAddresses = [];
+        let selectedAddressId = null;
+        let couponDiscount = 0;
+        let appliedCouponCode = null;
+        let selectedPaymentMethod = 'upi';
+
+        // Render Cart Items
+        function renderCart() {
+            itemsContainer.innerHTML = '';
+            
+            if(cart.length === 0) {
+                itemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+                document.getElementById('pay-btn').style.display = 'none';
+                document.getElementById('payment-methods').style.display = 'none';
+                updateSummary(0);
+                if(typeof updateNav === 'function') updateNav();
+                return;
+            } else {
+                document.getElementById('pay-btn').style.display = 'block';
+                document.getElementById('payment-methods').style.display = 'block';
+            }
+
+            // Hydrate Payment Option Tiles
+            const pTiles = document.getElementById('payment-tiles');
+            pTiles.innerHTML = '';
+            const paymentOptions = [
+                { id: 'upi', label: 'UPI', desc: 'GPay / PhonePe / Paytm' },
+                { id: 'card', label: 'Card', desc: 'Credit or Debit' },
+                { id: 'netbanking', label: 'Netbanking', desc: 'Direct Bank Transfer' },
+                { id: 'cod', label: 'COD', desc: 'Cash on Delivery' }
+            ];
+            paymentOptions.forEach(opt => {
+                const tile = document.createElement('div');
+                tile.className = `tile-option ${opt.id === selectedPaymentMethod ? 'selected' : ''}`;
+                tile.innerHTML = `
+                    <span class="tile-label">${opt.label}</span>
+                    <span class="tile-title">${opt.desc}</span>
+                `;
+                tile.addEventListener('click', () => {
+                    document.querySelectorAll('#payment-tiles .tile-option').forEach(el => el.classList.remove('selected'));
+                    tile.classList.add('selected');
+                    selectedPaymentMethod = opt.id;
+                });
+                pTiles.appendChild(tile);
+            });
+
+            cart.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div>
+                        <div class="cart-item-info">${item.name}</div>
+                        <div class="cart-item-meta">Size: ${item.size} ${item.variant ? '| Variant: '+item.variant : ''}</div>
+                        <div class="cart-item-actions">
+                            <div class="qty-controls">
+                                <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                            </div>
+                            <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                        </div>
+                    </div>
+                    <div style="font-family: var(--mono); font-weight: 600;">₹${item.price * item.qty}</div>
+                `;
+                itemsContainer.appendChild(div);
+            });
+
+            calculateAndDisplayTotals();
+        }
+
+        window.updateQty = (index, delta) => {
+            if(cart[index].qty + delta > 0) {
+                cart[index].qty += delta;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+            } else if (cart[index].qty + delta === 0) {
+                removeItem(index);
+            }
+        };
+
+        window.removeItem = (index) => {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        };
+
+        // Real-time calculation helper
+        function calculateAndDisplayTotals() {
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += item.price * item.qty;
+            });
+
+            // Standard fallback shipping calculation: Free above ₹999, else ₹80
+            const shipping = subtotal >= 999 ? 0 : 80;
+            const tax = Math.round(subtotal * 0.05);
+
+            let giftWrap = 0;
+            if (document.getElementById('is-gift-order').checked && document.getElementById('gift-packaging').checked) {
+                giftWrap = 50;
+            }
+
+            const total = subtotal - couponDiscount + shipping + tax + giftWrap;
+
+            document.getElementById('summary-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+            document.getElementById('summary-shipping').textContent = `₹${shipping.toFixed(2)}`;
+            document.getElementById('summary-tax').textContent = `₹${tax.toFixed(2)}`;
+            document.getElementById('summary-total').textContent = `₹${total.toFixed(2)}`;
+
+            if (couponDiscount > 0) {
+                document.getElementById('summary-discount-row').style.display = 'flex';
+                document.getElementById('summary-discount').textContent = `-₹${couponDiscount.toFixed(2)}`;
+            } else {
+                document.getElementById('summary-discount-row').style.display = 'none';
+            }
+
+            if(typeof updateNav === 'function') updateNav();
+        }
+
+        function updateSummary(val) {
+            document.getElementById('summary-subtotal').textContent = `₹${val.toFixed(2)}`;
+            document.getElementById('summary-shipping').textContent = `₹${val.toFixed(2)}`;
+            document.getElementById('summary-tax').textContent = `₹${val.toFixed(2)}`;
+            document.getElementById('summary-total').textContent = `₹${val.toFixed(2)}`;
+        }
+
+        // Toggle Gift panel display
+        document.getElementById('is-gift-order').addEventListener('change', (e) => {
+            const panel = document.getElementById('gift-panel');
+            panel.style.display = e.target.checked ? 'block' : 'none';
+            calculateAndDisplayTotals();
+        });
+
+        document.getElementById('gift-packaging').addEventListener('change', () => {
+            calculateAndDisplayTotals();
+        });
+
+        // Fetch Saved Addresses
+        async function fetchSavedAddresses() {
+            try {
+                const res = await fetch('/api/store/addresses', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    savedAddresses = await res.json();
+                }
+            } catch (err) {
+                console.error('Failed to load saved addresses', err);
+            }
+            // Always render the address grid — even if API fails,
+            // the user must be able to enter a new address.
+            renderAddressesGrid();
+        }
+
+        function renderAddressesGrid() {
+            const grid = document.getElementById('saved-addresses-grid');
+            document.getElementById('address-section').style.display = 'block';
+            grid.innerHTML = '';
+
+            // Render existing address cards
+            savedAddresses.forEach(addr => {
+                const card = document.createElement('div');
+                card.className = `address-card ${selectedAddressId === addr.id ? 'selected' : ''}`;
+                card.innerHTML = `
+                    <h4>${addr.address_label}</h4>
+                    <p><strong>${addr.recipient_name}</strong></p>
+                    <p>${addr.address_line1}, ${addr.city}</p>
+                    <p>${addr.state} - ${addr.pincode}</p>
+                `;
+                card.addEventListener('click', () => {
+                    selectedAddressId = addr.id;
+                    document.getElementById('new-address-form').style.display = 'none';
+                    document.getElementById('save-new-address').parentNode.style.display = 'none';
+                    renderAddressesGrid();
+                });
+                grid.appendChild(card);
+            });
+
+            // Render a card for new address
+            const newCard = document.createElement('div');
+            newCard.className = `address-card ${selectedAddressId === null ? 'selected' : ''}`;
+            newCard.innerHTML = `
+                <h4>${savedAddresses.length === 0 ? 'Delivery Address' : '+ Add New Address'}</h4>
+                <p>${savedAddresses.length === 0 ? 'Enter where to deliver' : 'Deliver to a new location'}</p>
+            `;
+            newCard.addEventListener('click', () => {
+                selectedAddressId = null;
+                document.getElementById('new-address-form').style.display = 'grid';
+                document.getElementById('save-new-address').parentNode.style.display = 'flex';
+                renderAddressesGrid();
+            });
+            grid.appendChild(newCard);
+
+            // Auto-open form if no saved addresses (first-time customer)
+            if (savedAddresses.length === 0 && selectedAddressId === null) {
+                document.getElementById('new-address-form').style.display = 'grid';
+                document.getElementById('save-new-address').parentNode.style.display = 'flex';
+            }
+        }
+
+        // Apply Promo Coupon
+        document.getElementById('apply-coupon-btn').addEventListener('click', async () => {
+            const codeInput = document.getElementById('coupon-code');
+            const code = codeInput.value.trim();
+            const feedback = document.getElementById('coupon-feedback');
+
+            if (!code) {
+                feedback.textContent = 'Please enter a valid coupon code.';
+                feedback.style.color = 'red';
+                return;
+            }
+
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += item.price * item.qty;
+            });
+
+            // Convert INR subtotal to paise for verification
+            const subtotalPaise = Math.round(subtotal * 100);
+
+            try {
+                feedback.textContent = 'Applying coupon code...';
+                feedback.style.color = 'var(--dust)';
+
+                const res = await fetch('/api/store/coupons/apply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ code, subtotal: subtotalPaise })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to apply coupon.');
+
+                // Discount returned is in paise. Convert to INR.
+                couponDiscount = data.discountApplied / 100;
+                appliedCouponCode = data.couponCode;
+
+                feedback.textContent = `Coupon applied successfully! Saved ₹${couponDiscount.toFixed(2)}`;
+                feedback.style.color = 'green';
+                calculateAndDisplayTotals();
+
+            } catch (err) {
+                couponDiscount = 0;
+                appliedCouponCode = null;
+                feedback.textContent = err.message;
+                feedback.style.color = 'red';
+                calculateAndDisplayTotals();
+            }
+        });
+
+        // Trigger Address fetch
+        fetchSavedAddresses();
+        renderCart();
+
+        // Submit Order Placement
+        document.getElementById('pay-btn').addEventListener('click', async () => {
+            try {
+                let shippingAddress = null;
+
+                if (selectedAddressId !== null) {
+                    const addr = savedAddresses.find(a => a.id === selectedAddressId);
+                    shippingAddress = {
+                        recipient_name: addr.recipient_name,
+                        phone: addr.phone,
+                        address_line1: addr.address_line1,
+                        address_line2: addr.address_line2,
+                        city: addr.city,
+                        state: addr.state,
+                        pincode: addr.pincode
+                    };
+                } else {
+                    // Gather new address form details
+                    const name = document.getElementById('ship-name').value.trim();
+                    const phone = document.getElementById('ship-phone').value.trim();
+                    const line1 = document.getElementById('ship-line1').value.trim();
+                    const line2 = document.getElementById('ship-line2').value.trim();
+                    const city = document.getElementById('ship-city').value.trim();
+                    const state = document.getElementById('ship-state').value.trim();
+                    const pincode = document.getElementById('ship-pincode').value.trim();
+                    const label = document.getElementById('ship-label').value;
+
+                    if (!name || !phone || !line1 || !city || !state || !pincode) {
+                        alert('Please fill out all address details.');
+                        return;
+                    }
+
+                    shippingAddress = {
+                        recipient_name: name,
+                        phone,
+                        address_line1: line1,
+                        address_line2: line2,
+                        city,
+                        state,
+                        pincode
+                    };
+
+                    // Persist address to profile if checked
+                    if (document.getElementById('save-new-address').checked) {
+                        await fetch('/api/store/addresses', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                address_label: label,
+                                recipient_name: name,
+                                phone,
+                                address_line1: line1,
+                                address_line2: line2,
+                                city,
+                                state,
+                                pincode
+                            })
+                        });
+                    }
+                }
+
+                const method = selectedPaymentMethod;
+                const orderNotes = document.getElementById('order-notes').value.trim();
+                const isGift = document.getElementById('is-gift-order').checked;
+                const giftMessage = isGift ? document.getElementById('gift-message').value.trim() : '';
+                const giftPackaging = isGift && document.getElementById('gift-packaging').checked;
+                const hideInvoice = isGift && document.getElementById('hide-invoice').checked;
+
+                const payload = {
+                    shipping_address: shippingAddress,
+                    billing_address: shippingAddress,
+                    order_notes: orderNotes,
+                    is_gift: isGift,
+                    gift_message: giftMessage,
+                    gift_packaging: giftPackaging,
+                    hide_invoice: hideInvoice,
+                    coupon_code: appliedCouponCode,
+                    items: cart.map(item => ({
+                        variant_id: item.variant_id || item.id,
+                        qty: item.qty
+                    })),
+                    payment_method: method
+                };
+
+                // Post checkout details
+                const btn = document.getElementById('pay-btn');
+                btn.textContent = 'Processing...';
+                btn.disabled = true;
+
+                const res = await fetch('/api/store/orders/create', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                if (!res.ok) throw new Error(data.error || 'Failed to place order.');
+
+                if (method === 'cod') {
+                    alert(`Order #${data.orderNumber} successfully placed via Cash on Delivery!`);
+                    localStorage.removeItem('cart');
+                    if(typeof updateNav === 'function') updateNav();
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // Razorpay checkout
+                const configRes = await fetch('/api/config');
+                const configData = await configRes.json();
+
+                const options = {
+                    key: configData.razorpayKeyId, 
+                    amount: data.rzpOrder.amount,
+                    currency: "INR",
+                    name: "House of Singhana",
+                    description: `Payment for Order #${data.orderNumber}`,
+                    order_id: data.rzpOrder.id,
+                    handler: async function (response) {
+                        const verifyRes = await fetch('/api/orders/verify', {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ 
+                                db_order_id: data.orderId, 
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
+                        const verifyData = await verifyRes.json();
+                        if(verifyData.success) {
+                            alert("Payment successful! Order confirmed.");
+                            localStorage.removeItem('cart');
+                            window.location.href = 'index.html';
+                        } else {
+                            alert("Payment verification failed: " + (verifyData.error || "Unknown error"));
+                        }
+                    },
+                    theme: { color: "#111111" }
+                };
+                const rzp = new Razorpay(options);
+                rzp.open();
+
+            } catch(e) {
+                alert('Checkout failed: ' + e.message);
+                const btn = document.getElementById('pay-btn');
+                btn.textContent = 'Proceed to Payment';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

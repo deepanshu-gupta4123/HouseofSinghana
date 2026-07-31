@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register - House of Singhana</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .auth-container { padding: 140px 40px 80px; max-width: 500px; margin: 0 auto; text-align: center; min-height: 80vh; }
+        .auth-container h1 { font-family: var(--serif); font-size: 2.5rem; margin-bottom: 32px; color: var(--ink); }
+        .auth-form { display: flex; flex-direction: column; gap: 16px; }
+        .auth-form input { padding: 16px; font-family: var(--sans); font-size: 1rem; border: 1px solid var(--concrete-dark); background: var(--concrete-mid); outline: none; color: var(--ink); }
+        .auth-btn { padding: 18px; background: var(--ink); color: var(--concrete); font-family: var(--sans); text-transform: uppercase; letter-spacing: 0.1em; border: none; cursor: pointer; transition: background 0.3s; min-height: 56px; font-size: 0.9rem; }
+        .auth-btn:hover:not(:disabled) { background: var(--saffron); }
+        .auth-btn:disabled { background: var(--concrete-dark); cursor: not-allowed; color: var(--dust); }
+        .toggle-auth { margin-top: 24px; font-size: 0.9rem; color: var(--dust); cursor: pointer; text-decoration: underline; }
+        .forgot-link { margin-top: 16px; font-size: 0.9rem; color: var(--dust); cursor: pointer; text-decoration: underline; }
+        .otp-container { display: flex; gap: 8px; }
+        .otp-container input { flex: 1; }
+        .otp-container button { white-space: nowrap; padding: 0 16px; font-family: var(--sans); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; background: var(--concrete-dark); color: var(--ink); border: none; cursor: pointer; transition: background 0.2s; min-height: 52px;}
+        .otp-container button:hover:not(:disabled) { background: var(--dust); color: var(--concrete); }
+        .otp-container button:disabled { opacity: 0.5; cursor: not-allowed; }
+        @media (max-width: 640px) {
+            .auth-container { padding: 100px 24px 60px; }
+            .auth-container h1 { font-size: 2rem; margin-bottom: 24px; }
+            .otp-container { flex-direction: column; }
+            .otp-container button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav" id="mainNav">
+        <a href="index.html" class="nav-brand"><span>House of Singhana</span></a>
+        <div class="nav-links">
+            <a href="checkout.html" id="nav-cart-link" class="magnetic" data-strength="15">Cart (0)</a>
+            <a href="login.html" id="nav-auth-link" class="magnetic" data-strength="15">Login</a>
+        </div>
+    </nav>
+    <main class="auth-container">
+        <h1 id="auth-title">Login</h1>
+        <form class="auth-form" id="auth-form" autocomplete="on">
+            <input type="email" id="email" placeholder="Email Address" autocomplete="email" required>
+            <input type="text" id="phone" placeholder="Mobile Number (e.g., +919999999999)" autocomplete="tel" style="display: none;">
+            
+            <div class="otp-container" id="otp-group" style="display: none;">
+                <input type="text" id="otp" placeholder="6-digit OTP" autocomplete="one-time-code">
+                <button type="button" id="send-otp-btn">Send OTP</button>
+            </div>
+            
+            <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+            
+            <button type="submit" class="auth-btn magnetic" data-strength="10" id="submit-btn">Login</button>
+        </form>
+        <div class="forgot-link magnetic" data-strength="5" id="forgot-btn">Forgot Password?</div>
+        <div class="toggle-auth magnetic" data-strength="5" id="toggle-btn">Create an account instead</div>
+    </main>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2"/>
+                    <path d="M50 20 L50 80 M20 40 L80 40 M30 60 L70 60" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="30" cy="70" r="4" fill="currentColor"/>
+                    <circle cx="70" cy="70" r="4" fill="currentColor"/>
+                </svg>
+                <h2>House of Singhana</h2>
+                <p>Since 1990</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        let authMode = 'login'; // 'login', 'register', 'forgot'
+        let countdownInterval = null;
+        
+        const form = document.getElementById('auth-form');
+        const title = document.getElementById('auth-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const forgotBtn = document.getElementById('forgot-btn');
+        
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+        const passwordInput = document.getElementById('password');
+        
+        const otpGroup = document.getElementById('otp-group');
+        const otpInput = document.getElementById('otp');
+        const sendOtpBtn = document.getElementById('send-otp-btn');
+
+        function updateUI() {
+            // Reset state
+            clearInterval(countdownInterval);
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = 'Send OTP';
+            otpInput.value = '';
+            
+            if (authMode === 'login') {
+                title.textContent = 'Login';
+                emailInput.style.display = 'block';
+                emailInput.required = true;
+                phoneInput.style.display = 'none';
+                phoneInput.required = false;
+                otpGroup.style.display = 'none';
+                otpInput.required = false;
+                passwordInput.placeholder = 'Password';
+                submitBtn.textContent = 'Login';
+                toggleBtn.textContent = 'Create an account instead';
+                forgotBtn.style.display = 'block';
+            } else if (authMode === 'register') {
+                title.textContent = 'Register';
+                emailInput.style.display = 'block';
+                emailInput.required = true;
+                phoneInput.style.display = 'block';
+                phoneInput.required = true;
+                otpGroup.style.display = 'flex';
+                otpInput.required = true;
+                passwordInput.placeholder = 'Password';
+                submitBtn.textContent = 'Complete Registration';
+                toggleBtn.textContent = 'Login to existing account';
+                forgotBtn.style.display = 'none';
+            } else if (authMode === 'forgot') {
+                title.textContent = 'Reset Password';
+                emailInput.style.display = 'none';
+                emailInput.required = false;
+                phoneInput.style.display = 'block';
+                phoneInput.required = true;
+                otpGroup.style.display = 'flex';
+                otpInput.required = true;
+                passwordInput.placeholder = 'New Password';
+                submitBtn.textContent = 'Reset Password';
+                toggleBtn.textContent = 'Back to Login';
+                forgotBtn.style.display = 'none';
+            }
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (authMode === 'login') authMode = 'register';
+            else authMode = 'login'; 
+            updateUI();
+        });
+
+        forgotBtn.addEventListener('click', () => {
+            authMode = 'forgot';
+            updateUI();
+        });
+
+        function startCooldown() {
+            let timeLeft = 60;
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.textContent = `Resend in ${timeLeft}s`;
+            
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    sendOtpBtn.disabled = false;
+                    sendOtpBtn.textContent = 'Resend OTP';
+                } else {
+                    sendOtpBtn.textContent = `Resend in ${timeLeft}s`;
+                }
+            }, 1000);
+        }
+
+        sendOtpBtn.addEventListener('click', async () => {
+            const phone = phoneInput.value;
+            if (!phone) return alert("Please enter a mobile number first.");
+            
+            const originalText = sendOtpBtn.textContent;
+            sendOtpBtn.textContent = 'Sending...';
+            sendOtpBtn.disabled = true;
+            
+            try {
+                const res = await fetch('/api/auth/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    // Make it explicitly clear it's a mock
+                    alert("Mock OTP sent successfully!\\n\\nPlease check the terminal where you are running the Node.js server to see your 6-digit code.");
+                    startCooldown();
+                } else {
+                    alert(data.error || "Failed to send OTP");
+                    sendOtpBtn.textContent = originalText;
+                    sendOtpBtn.disabled = false;
+                }
+            } catch (err) {
+                alert("Connection error");
+                sendOtpBtn.textContent = originalText;
+                sendOtpBtn.disabled = false;
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const phone = phoneInput.value;
+            const otp = otpInput.value;
+            
+            let endpoint = '';
+            let payload = {};
+            
+            if (authMode === 'login') {
+                endpoint = '/api/auth/login';
+                payload = { email, password };
+            } else if (authMode === 'register') {
+                endpoint = '/api/auth/register';
+                payload = { email, password, phone, otp };
+            } else if (authMode === 'forgot') {
+                endpoint = '/api/auth/reset-password';
+                payload = { phone, otp, new_password: password };
+            }
+
+            const origText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                submitBtn.textContent = origText;
+                submitBtn.disabled = false;
+
+                if (res.ok) {
+                    if (authMode === 'forgot') {
+                        alert("Password reset successfully! Please login with your new password.");
+                        authMode = 'login';
+                        updateUI();
+                    } else {
+                        localStorage.setItem('token', data.token);
+                        if (data.user) {
+                            localStorage.setItem('user', JSON.stringify(data.user));
+                        }
+                        if (data.user && data.user.scope === 'os') {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }
+                } else {
+                    alert(data.error);
+                }
+            } catch(err) {
+                submitBtn.textContent = origText;
+                submitBtn.disabled = false;
+                alert('Connection error');
+            }
+        });
+        
+        // Init
+        updateUI();
+    </script>
+</body>
+</html>

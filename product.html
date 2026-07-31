@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product - House of Singhana</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .product-detail { padding: 140px 40px 80px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; min-height: 80vh; }
+        .product-gallery { width: 100%; aspect-ratio: 1 / 1; border-radius: 4px; overflow: hidden; background: var(--concrete-mid); }
+        .product-gallery img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; transition: opacity 0.3s ease; }
+        .product-info h1 { font-size: 3rem; margin-bottom: 16px; font-family: var(--serif); color: var(--ink); }
+        .product-info p { color: var(--ink-soft); margin-bottom: 32px; font-size: 1.1rem; }
+        .sku-selector { margin-bottom: 32px; }
+        .sku-selector label { display: block; font-family: var(--mono); font-size: 0.8rem; margin-bottom: 8px; color: var(--dust); text-transform: uppercase; }
+        .sku-selector select { width: 100%; padding: 16px; font-family: var(--sans); font-size: 1rem; border: 1px solid var(--concrete-dark); background: var(--concrete-mid); margin-bottom: 16px; outline: none; color: var(--ink); }
+        .price-display { font-size: 1.8rem; font-weight: 600; margin-bottom: 32px; color: var(--saffron); font-family: var(--mono); }
+        .add-to-cart-btn { width: 100%; padding: 20px; background: var(--ink); color: var(--concrete); font-family: var(--sans); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; border: none; cursor: pointer; transition: background 0.3s; min-height: 56px; }
+        .add-to-cart-btn:hover { background: var(--saffron); }
+        @media (max-width: 768px) {
+            .product-detail {
+                grid-template-columns: 1fr;
+                padding: 100px 20px 60px;
+                gap: 32px;
+            }
+            .product-info h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav" id="mainNav">
+        <a href="index.html" class="nav-brand"><span>House of Singhana</span></a>
+        <div class="nav-links">
+            <a href="checkout.html" id="nav-cart-link" class="magnetic" data-strength="15">Cart (0)</a>
+            <a href="login.html" id="nav-auth-link" class="magnetic" data-strength="15">Login</a>
+        </div>
+    </nav>
+
+    <main class="product-detail">
+        <div class="product-gallery skeleton">
+            <img id="p-img" src="" alt="Product Image" style="opacity: 0;">
+        </div>
+        <div class="product-info">
+            <h1 id="p-name"><span class="skeleton" style="width: 240px; height: 40px; display: inline-block;"></span></h1>
+            <div id="p-desc">
+                <span class="skeleton" style="width: 100%; height: 16px; margin-bottom: 8px; display: inline-block;"></span>
+                <span class="skeleton" style="width: 95%; height: 16px; margin-bottom: 8px; display: inline-block;"></span>
+                <span class="skeleton" style="width: 80%; height: 16px; display: inline-block;"></span>
+            </div>
+            
+            <div id="variant-selector-container" class="sku-selector" style="display: none;">
+                <label>Select Variant</label>
+                <div id="variant-tiles" class="tile-selector">
+                    <div class="tile-option skeleton" style="border: none;"></div>
+                    <div class="tile-option skeleton" style="border: none;"></div>
+                </div>
+            </div>
+
+            <div class="sku-selector">
+                <label>Select Size</label>
+                <div id="size-tiles" class="tile-selector">
+                    <div class="tile-option skeleton" style="border: none;"></div>
+                    <div class="tile-option skeleton" style="border: none;"></div>
+                    <div class="tile-option skeleton" style="border: none;"></div>
+                    <div class="tile-option skeleton" style="border: none;"></div>
+                </div>
+            </div>
+
+            <div class="price-display" id="p-price"><span class="skeleton" style="width: 80px; height: 32px; display: inline-block;"></span></div>
+            <button class="add-to-cart-btn magnetic" data-strength="10" id="add-to-cart">Add to Cart</button>
+        </div>
+    </main>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2"/>
+                    <path d="M50 20 L50 80 M20 40 L80 40 M30 60 L70 60" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="30" cy="70" r="4" fill="currentColor"/>
+                    <circle cx="70" cy="70" r="4" fill="currentColor"/>
+                </svg>
+                <h2>House of Singhana</h2>
+                <p>Since 1990</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        const sizes = [
+            { id: '100g', label: '100g', desc: 'Food-Grade Plastic', multiplier: 0.1, margin: 1.15 },
+            { id: '250g', label: '250g', desc: 'Food-Grade Plastic', multiplier: 0.25, margin: 1.15 },
+            { id: '500g', label: '500g', desc: 'Glass Jar', multiplier: 0.5, margin: 1.0 },
+            { id: '1kg', label: '1kg', desc: 'Fine Jute', multiplier: 1.0, margin: 1.0 }
+        ];
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id'); // e.g. 'chilli'
+
+        let product = null;
+        let selectedSizeId = '1kg';
+        let selectedVariantName = null;
+
+        async function loadProductDetail() {
+            try {
+                const res = await fetch(`/api/store/products/${productId}`);
+                if (!res.ok) throw new Error('Product not found');
+                product = await res.json();
+
+                document.getElementById('p-name').textContent = product.name;
+                document.getElementById('p-desc').textContent = product.description || 'Premium estate-sourced spice blend.';
+
+                const pImg = document.getElementById('p-img');
+                const pGallery = document.querySelector('.product-gallery');
+                pImg.onload = () => {
+                    pImg.style.opacity = '1';
+                    pGallery.classList.remove('skeleton');
+                };
+                pImg.src = product.images && product.images[0] ? product.images[0] : 'assets/' + product.slug + '.png';
+
+                // Hydrate Variant Tiles
+                const vTiles = document.getElementById('variant-tiles');
+                const vc = document.getElementById('variant-selector-container');
+                vTiles.innerHTML = '';
+                
+                if (product.variants && product.variants.length > 0) {
+                    vc.style.display = 'block';
+                    selectedVariantName = product.variants[0].variant_name; // Set default variant
+                    product.variants.forEach((v, idx) => {
+                        const tile = document.createElement('div');
+                        tile.className = `tile-option ${idx === 0 ? 'selected' : ''}`;
+                        tile.innerHTML = `
+                            <span class="tile-label">Blend</span>
+                            <span class="tile-title">${v.variant_name}</span>
+                        `;
+                        tile.addEventListener('click', () => {
+                            document.querySelectorAll('#variant-tiles .tile-option').forEach(el => el.classList.remove('selected'));
+                            tile.classList.add('selected');
+                            selectedVariantName = v.variant_name;
+                            updatePrice();
+                        });
+                        vTiles.appendChild(tile);
+                    });
+                } else {
+                    vc.style.display = 'none';
+                    selectedVariantName = null;
+                }
+
+                // Hydrate Size Tiles
+                const sTiles = document.getElementById('size-tiles');
+                sTiles.innerHTML = '';
+                sizes.forEach((s, idx) => {
+                    const tile = document.createElement('div');
+                    tile.className = `tile-option ${s.id === selectedSizeId ? 'selected' : ''}`;
+                    tile.innerHTML = `
+                        <span class="tile-label">${s.desc}</span>
+                        <span class="tile-title">${s.label}</span>
+                    `;
+                    tile.addEventListener('click', () => {
+                        document.querySelectorAll('#size-tiles .tile-option').forEach(el => el.classList.remove('selected'));
+                        tile.classList.add('selected');
+                        selectedSizeId = s.id;
+                        updatePrice();
+                    });
+                    sTiles.appendChild(tile);
+                });
+
+                updatePrice();
+            } catch (e) {
+                console.error(e);
+                window.location.href = 'index.html';
+            }
+        }
+
+        function updatePrice() {
+            if (!product) return;
+            const sizeObj = sizes.find(s => s.id === selectedSizeId);
+            
+            // base_price on server is in paise (INR * 100)
+            const basePriceInRupees = product.base_price / 100;
+            const calculated = Math.round((basePriceInRupees * sizeObj.multiplier) * sizeObj.margin);
+            document.getElementById('p-price').textContent = `₹${calculated}`;
+        }
+
+        loadProductDetail();
+
+        // Cart Logic (LocalStorage)
+        document.getElementById('add-to-cart').addEventListener('click', () => {
+            if (!product) return;
+            const sizeObj = sizes.find(s => s.id === selectedSizeId);
+            
+            const basePriceInRupees = product.base_price / 100;
+            const price = Math.round((basePriceInRupees * sizeObj.multiplier) * sizeObj.margin);
+            
+            const cartItem = {
+                id: productId + '-' + selectedSizeId + (selectedVariantName ? '-'+selectedVariantName : ''),
+                productId,
+                name: product.name,
+                variant: selectedVariantName,
+                size: selectedSizeId,
+                price: price,
+                qty: 1
+            };
+
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existing = cart.find(i => i.id === cartItem.id);
+            if(existing) existing.qty++;
+            else cart.push(cartItem);
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            if (typeof updateNav === 'function') updateNav();
+            
+            const btn = document.getElementById('add-to-cart');
+            btn.textContent = "Added to Cart! Redirecting...";
+            btn.style.background = "var(--saffron)";
+            setTimeout(() => {
+                window.location.href = 'checkout.html';
+            }, 800);
+        });
+    </script>
+</body>
+</html>
