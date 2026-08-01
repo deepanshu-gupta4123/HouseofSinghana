@@ -54,12 +54,16 @@ automationEngine.initialize().catch(err => {
 });
 notificationService.initialize();
 analyticsService.initialize();
-cartRecoveryService.ensureTableExists().then(() => {
-    // Only set background intervals if running directly (not in Serverless/Vercel environments)
-    if (require.main === module) {
-        setInterval(() => cartRecoveryService.scanAndRemind(), 5 * 60 * 1000);
-    }
-});
+cartRecoveryService.ensureTableExists()
+    .then(() => {
+        // Only set background intervals if running directly (not in Serverless/Vercel environments)
+        if (require.main === module) {
+            setInterval(() => cartRecoveryService.scanAndRemind(), 5 * 60 * 1000);
+        }
+    })
+    .catch(err => {
+        console.error('Failed to initialize Cart Recovery Service database table:', err);
+    });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
