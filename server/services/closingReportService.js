@@ -46,7 +46,9 @@ class ClosingReportService {
 
             const reportHtml = await templateEngine.render('nightly_closing_report', context);
 
-            const reportDir = path.join(__dirname, '..', 'vault', 'reports');
+            const reportDir = process.env.VERCEL
+                ? path.join('/tmp', 'vault', 'reports')
+                : path.join(__dirname, '..', 'vault', 'reports');
             if (!fs.existsSync(reportDir)) {
                 fs.mkdirSync(reportDir, { recursive: true });
             }

@@ -14,7 +14,9 @@ class DocumentGenerator {
 
         const html = await templateEngine.render(templateKey, context);
 
-        const vaultDir = path.join(__dirname, '..', 'vault', `${templateKey}s`);
+        const vaultDir = process.env.VERCEL
+            ? path.join('/tmp', 'vault', `${templateKey}s`)
+            : path.join(__dirname, '..', 'vault', `${templateKey}s`);
         if (!fs.existsSync(vaultDir)) {
             fs.mkdirSync(vaultDir, { recursive: true });
         }

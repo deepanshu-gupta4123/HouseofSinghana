@@ -305,7 +305,9 @@ class OrderService {
             const invoiceHtml = await templateEngine.render('invoice', templateContext);
 
             // Save dynamic invoice layout into local directory
-            const docsDir = path.join(__dirname, '..', 'vault', 'invoices');
+            const docsDir = process.env.VERCEL
+                ? path.join('/tmp', 'vault', 'invoices')
+                : path.join(__dirname, '..', 'vault', 'invoices');
             if (!fs.existsSync(docsDir)) {
                 fs.mkdirSync(docsDir, { recursive: true });
             }
