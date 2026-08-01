@@ -1,0 +1,24 @@
+{
+  "name": "house-of-singhana-root",
+  "version": "1.0.0",
+  "description": "Root package.json for Vercel multi-directory deployment",
+  "main": "api/[...slug].js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.3.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "handlebars": "^4.7.9",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "razorpay": "^2.9.6",
+    "sqlite3": "^6.0.1",
+    "twilio": "^6.0.2"
+  }
+}
