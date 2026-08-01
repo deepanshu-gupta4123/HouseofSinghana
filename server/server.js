@@ -55,8 +55,10 @@ automationEngine.initialize().catch(err => {
 notificationService.initialize();
 analyticsService.initialize();
 cartRecoveryService.ensureTableExists().then(() => {
-    // Check for abandoned carts every 5 minutes in background
-    setInterval(() => cartRecoveryService.scanAndRemind(), 5 * 60 * 1000);
+    // Only set background intervals if running directly (not in Serverless/Vercel environments)
+    if (require.main === module) {
+        setInterval(() => cartRecoveryService.scanAndRemind(), 5 * 60 * 1000);
+    }
 });
 
 const app = express();
@@ -554,28 +556,33 @@ app.post('/api/os/system/jobs/:id/run', authenticateToken, requirePermission('sy
 app.get('/api/os/system/storage', authenticateToken, requirePermission('system:health'), osSettingsController.getStorageStats);
 app.post('/api/os/system/archive/run', authenticateToken, requirePermission('system:archive'), osSettingsController.triggerArchive);
 
-// Start Server
-const server = app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// Export the app instance for Serverless / Vercel usage
+module.exports = app;
 
-// Graceful Shutdown
-process.on('SIGTERM', () => {
-    console.log('SIGTERM received. Shutting down gracefully...');
-    server.close(() => {
-        db.close(() => {
-            console.log('Database connection closed.');
-            process.exit(0);
+// Start Server ONLY if run directly (e.g. node server.js, pm2, docker)
+if (require.main === module) {
+    const server = app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+        console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+
+    // Graceful Shutdown
+    process.on('SIGTERM', () => {
+        console.log('SIGTERM received. Shutting down gracefully...');
+        server.close(() => {
+            db.close(() => {
+                console.log('Database connection closed.');
+                process.exit(0);
+            });
         });
     });
-});
 
-process.on('SIGINT', () => {
-    console.log('SIGINT received. Shutting down...');
-    server.close(() => {
-        db.close(() => {
-            process.exit(0);
+    process.on('SIGINT', () => {
+        console.log('SIGINT received. Shutting down...');
+        server.close(() => {
+            db.close(() => {
+                process.exit(0);
+            });
         });
     });
-});
+}
