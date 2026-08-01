@@ -1,4 +1,10 @@
 {
   "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js?path=$1"
+    }
+  ],
   "cleanUrls": true
 }

@@ -8,7 +8,20 @@ try {
 }
 
 module.exports = (req, res) => {
-    if (req.url === '/api/health-check' || req.url.endsWith('/health-check')) {
+    const url = require('url');
+    const parsedUrl = url.parse(req.url, true);
+
+    // Reconstruct the original requested URL from the path parameter
+    if (parsedUrl.query && parsedUrl.query.path) {
+        const originalPath = '/api/' + parsedUrl.query.path;
+        delete parsedUrl.query.path; // Strip the internal path parameter
+
+        const search = url.format({ query: parsedUrl.query });
+        req.url = originalPath + search;
+    }
+
+    // Health check endpoint
+    if (req.url.startsWith('/api/health-check') || req.url.includes('/health-check')) {
         let dbError = null;
         try {
             const dbHelper = require('../server/db');
