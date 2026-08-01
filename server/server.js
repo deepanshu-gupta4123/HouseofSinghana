@@ -456,7 +456,7 @@ app.post('/api/os/approvals/:id/respond', authenticateToken, requirePermission('
 
 // --- OS MEDIA LIBRARY APIs (Authenticated) ---
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/temp/' });
+const upload = multer({ dest: process.env.VERCEL ? '/tmp/uploads/temp/' : 'uploads/temp/' });
 app.get('/api/os/media', authenticateToken, osMediaController.listMedia);
 app.post('/api/os/media/upload', authenticateToken, upload.single('file'), osMediaController.uploadMedia);
 app.delete('/api/os/media/:id', authenticateToken, osMediaController.deleteMedia);
